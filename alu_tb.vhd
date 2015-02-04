@@ -96,7 +96,7 @@ BEGIN
  
     -- test vector stim process
     process is
-    file vec_file : text is in "testvectors2.dat";
+    file vec_file : text is in "testvectors1.dat";
     variable vec_line : line;
     variable good : boolean;
     variable vec_var : std_ulogic_vector(29 downto 0);
