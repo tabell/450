@@ -35,10 +35,25 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 USE ieee.numeric_std.ALL;
 
+
 ENTITY alu_tb IS
 END alu_tb;
  
 ARCHITECTURE behavior OF alu_tb IS 
+-- 
+function opcode_to_str(code : std_ulogic_vector(2 downto 0)) return string is
+variable ret : string(1 to 5);
+begin
+  case code is
+    when "100" => ret := "  +  ";
+    when "101" => ret := "  -  ";
+    when "110" => ret := " !&  ";
+    when "111" => ret := "  << ";
+    when "000" => ret := "  >> ";
+    when others => ret := "#####";
+  end case;
+  return ret;
+end function opcode_to_str;
  
     -- Component Declaration for the Unit Under Test (UUT)
  
@@ -96,12 +111,13 @@ BEGIN
  
     -- test vector stim process
     process is
-    file vec_file : text is in "testvectors1.dat";
+    file vec_file : text is in "testvectors2.dat";
     variable vec_line : line;
     variable good : boolean;
     variable vec_var : std_ulogic_vector(29 downto 0);
     variable previous_result : std_ulogic_vector(10 downto 0);
     begin
+      report("Starting test" & opcode_to_str("111"));
       wait for 105 ns; 
       while not endfile(VEC_FILE) loop
         readline (VEC_FILE, VEC_LINE);
@@ -110,7 +126,7 @@ BEGIN
         in_a <= VEC_VAR(26 downto 19);
         in_b <= VEC_VAR(18 downto 11);
         wait for clk_period;
-        report(integer'image(to_integer(signed(in_a))) & " ? " & integer'image(to_integer(signed(in_b))) & " = " & integer'image(to_integer(signed(result))));
+        report(integer'image(to_integer(signed(in_a))) & opcode_to_str(alu_mode) & integer'image(to_integer(signed(in_b))) & " = " & integer'image(to_integer(signed(result))));
         if (result /= VEC_VAR(10 downto 3)) then
           report("Problem! Expected " & integer'image(to_integer(signed(previous_result(10 downto 3)))) & " but got " & integer'image(to_integer(signed(result))));
         end if;
@@ -119,7 +135,7 @@ BEGIN
       wait;
     end process;
    
-   
+
    ---- Stimulus process
    --stim_proc: process
    --begin		
@@ -146,3 +162,4 @@ BEGIN
    --end process;
 
 END;
+
