@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   10:22:43 02/02/2015
+-- Create Date:   13:09:18 02/07/2015
 -- Design Name:   
--- Module Name:   /home/alex/450/alu/alu_tb.vhd
--- Project Name:  alu
+-- Module Name:   C:/Users/alexlaj/test/test/alu_test.vhd
+-- Project Name:  test
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -26,62 +26,44 @@
 -- simulation model.
 --------------------------------------------------------------------------------
 LIBRARY ieee;
-library std;
-USE ieee.std_logic_textio.ALL;
-use std.textio.all;
-use IEEE.STD_LOGIC_1164.ALL;
-
+USE ieee.std_logic_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
-USE ieee.numeric_std.ALL;
-
-
-ENTITY alu_tb IS
-END alu_tb;
+--USE ieee.numeric_std.ALL;
  
-ARCHITECTURE behavior OF alu_tb IS 
--- 
-function opcode_to_str(code : std_ulogic_vector(2 downto 0)) return string is
-variable ret : string(1 to 5);
-begin
-  case code is
-    when "100" => ret := "  +  ";
-    when "101" => ret := "  -  ";
-    when "110" => ret := " !&  ";
-    when "111" => ret := "  << ";
-    when "000" => ret := "  >> ";
-    when others => ret := "#####";
-  end case;
-  return ret;
-end function opcode_to_str;
+ENTITY alu_test IS
+END alu_test;
+ 
+ARCHITECTURE behavior OF alu_test IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
     COMPONENT alu
     PORT(
-         clk : IN  std_ulogic;
-         rst : IN  std_ulogic;
-         alu_mode : IN  std_ulogic_vector(2 downto 0);
-         in_a : IN  std_ulogic_vector(7 downto 0);
-         in_b : IN  std_ulogic_vector(7 downto 0);
-         result : OUT  std_ulogic_vector(7 downto 0);
-         n : OUT  std_ulogic;
-         z : OUT  std_ulogic
+         in_a : 		IN  std_ulogic_vector(7 downto 0);
+         in_b : 		IN  std_ulogic_vector(7 downto 0);
+         alu_mode : 	IN  std_ulogic_vector(2 downto 0);
+         clk : 		IN  std_ulogic;
+         rst : 		IN  std_ulogic;
+         result : 	OUT std_ulogic_vector(7 downto 0);
+         z : 	OUT std_ulogic;
+         n : 	OUT std_ulogic
         );
     END COMPONENT;
     
 
    --Inputs
-   signal clk : std_ulogic := '0';
-   signal rst : std_ulogic := '0';
+   signal in_a : 		std_ulogic_vector(7 downto 0) := (others => '0');
+   signal in_b : 		std_ulogic_vector(7 downto 0) := (others => '0');
    signal alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
-   signal in_a : std_ulogic_vector(7 downto 0) := (others => '0');
-   signal in_b : std_ulogic_vector(7 downto 0) := (others => '0');
+   signal clk : 		std_ulogic := '0';
+   signal rst : 		std_ulogic := '0';
 
  	--Outputs
    signal result : std_ulogic_vector(7 downto 0);
-   signal n : std_ulogic;
    signal z : std_ulogic;
+   signal n : std_ulogic;
 
    -- Clock period definitions
    constant clk_period : time := 10 ns;
@@ -90,14 +72,14 @@ BEGIN
  
 	-- Instantiate the Unit Under Test (UUT)
    uut: alu PORT MAP (
-          clk => clk,
-          rst => rst,
-          alu_mode => alu_mode,
           in_a => in_a,
           in_b => in_b,
+          alu_mode => alu_mode,
+          clk => clk,
+          rst => rst,
           result => result,
-          n => n,
-          z => z
+          z => z,
+          n => n
         );
 
    -- Clock process definitions
@@ -109,57 +91,96 @@ BEGIN
 		wait for clk_period/2;
    end process;
  
-    -- test vector stim process
-    process is
-    file vec_file : text is in "testvectors2.dat";
-    variable vec_line : line;
-    variable good : boolean;
-    variable vec_var : std_ulogic_vector(29 downto 0);
-    variable previous_result : std_ulogic_vector(10 downto 0);
-    begin
-      report("Starting test" & opcode_to_str("111"));
-      wait for 105 ns; 
-      while not endfile(VEC_FILE) loop
-        readline (VEC_FILE, VEC_LINE);
-        read (VEC_LINE, VEC_VAR);
-        alu_mode <= VEC_VAR(29 downto 27);
-        in_a <= VEC_VAR(26 downto 19);
-        in_b <= VEC_VAR(18 downto 11);
-        wait for clk_period;
-        report(integer'image(to_integer(signed(in_a))) & opcode_to_str(alu_mode) & integer'image(to_integer(signed(in_b))) & " = " & integer'image(to_integer(signed(result))));
-        if (result /= VEC_VAR(10 downto 3)) then
-          report("Problem! Expected " & integer'image(to_integer(signed(previous_result(10 downto 3)))) & " but got " & integer'image(to_integer(signed(result))));
-        end if;
-        previous_result := VEC_VAR(10 downto 0);
-      end loop;
+
+   -- Stimulus process
+   stim_proc: process
+   begin		
+      -- hold reset state for 100 ns.
+      wait for 100 ns;	
+
+      wait for clk_period*10;
+
+      -- insert stimulus here
+		-- add two +
+		--pass
+		in_a <= "00000001";
+		in_b <= "00000001";
+		alu_mode <= "100";
+		wait for 100 ns;	
+		-- add two -
+		--pass
+		in_a <= std_ulogic_vector(to_signed(-3,8));
+		in_b <= std_ulogic_vector(to_signed(-2,8));
+		alu_mode <= "100";
+		wait for 100 ns;
+		-- add - and +, result -
+		--pass
+		in_a <= std_ulogic_vector(to_signed(-3,8));
+		in_b <= std_ulogic_vector(to_signed(2,8));
+		alu_mode <= "100";
+		wait for 100 ns;		
+		-- add - and +, result +
+		--pass
+		in_a <= std_ulogic_vector(to_signed(3,8));
+		in_b <= std_ulogic_vector(to_signed(-2,8));
+		alu_mode <= "100";
+		wait for 100 ns;		
+		-- add - and +, result 0
+		--pass
+		in_a <= std_ulogic_vector(to_signed(-3,8));
+		in_b <= std_ulogic_vector(to_signed(3,8));
+		alu_mode <= "100";
+		wait for 100 ns;		
+		-- sub + and +
+		--pass
+		alu_mode <= "101";
+		in_a <= std_ulogic_vector(to_signed(4,8));
+		in_b <= std_ulogic_vector(to_signed(1,8));
+		alu_mode <= "101";
+		wait for 100 ns;
+		-- sub - and +
+		--pass
+		in_a <= std_ulogic_vector(to_signed(-3,8));
+		in_b <= std_ulogic_vector(to_signed(2,8));
+		alu_mode <= "101";
+		wait for 100 ns;
+		-- sub + and -
+		-- pass
+		in_a <= std_ulogic_vector(to_signed(3,8));
+		in_b <= std_ulogic_vector(to_signed(-2,8));
+		alu_mode <= "101";
+		wait for 100 ns;
+		-- sub - and -, result +
+		--pass
+		in_a <= std_ulogic_vector(to_signed(-1,8));
+		in_b <= std_ulogic_vector(to_signed(-2,8));
+		alu_mode <= "101";
+		wait for 100 ns;
+		-- sub - and -, result -
+		--pass
+		in_a <= std_ulogic_vector(to_signed(-3,8));
+		in_b <= std_ulogic_vector(to_signed(-2,8));
+		alu_mode <= "101";
+		wait for 100 ns;
+		-- nand
+		--pass
+		in_a <= std_ulogic_vector(to_signed(1,8));
+		in_b <= std_ulogic_vector(to_signed(2,8));
+		alu_mode <= "110";
+		wait for 100 ns;
+		-- shift left
+		--pass
+		in_a <= std_ulogic_vector(to_signed(2,8));
+		in_b <= std_ulogic_vector(to_signed(2,8));
+		alu_mode <= "111";
+		wait for 100 ns;
+		-- shift right
+		--pass
+		in_a <= std_ulogic_vector(to_signed(4,8));
+		in_b <= std_ulogic_vector(to_signed(2,8));
+		alu_mode <= "000";
+		wait for 100 ns;
       wait;
-    end process;
-   
-
-   ---- Stimulus process
-   --stim_proc: process
-   --begin		
-   --   -- hold reset state for 100 ns.
-   --   wait for 100 ns;	
-
-   --   wait for clk_period*10;
-      
-   --   in_a <= "00001111";
-   --   in_b <= "00000001";
-   --   alu_mode <= "100";
-   --   wait for clk_period;
-   --   in_a <= "00011111";
-   --   in_b <= "00000001";
-   --   alu_mode <= "100";
-   --   wait for clk_period;
-   --   in_a <= "00111111";
-   --   in_b <= "00000001";
-   --   alu_mode <= "100";
-   --   wait for clk_period;
-   --   -- insert stimulus here 
-
-   --   wait;
-   --end process;
+   end process;
 
 END;
-
