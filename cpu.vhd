@@ -53,6 +53,7 @@ signal reg_w_data : std_ulogic_vector(7 downto 0) := (others => '0');
 
 -- fetch-decode nonarchitectural registers
 signal ifid_instr : std_ulogic_vector(7 downto 0);
+
 -- decode-execute nonarchitectural registers
 signal idex_opcode : std_ulogic_vector(3 downto 0);
 signal idex_rega : std_ulogic_vector(1 downto 0);
@@ -60,13 +61,14 @@ signal idex_regb : std_ulogic_vector(1 downto 0);
 
 -- execute-memory nonarchitectural registers
 -- memory-writeback nonarchitectural registers
+signal in_port_data : std_ulogic_vector(7 downto 0) := (others => '0');
 
 begin
 
   -- entity declarations for instantiations
   rom : entity work.imem port map(clk, pc, ifid_instr);
   regfile : entity work.register_file port map(clk, rst, reg_r_index_a, reg_r_index_b, 
-                        reg_wr_index, reg_w_en, reg_r_data_a, reg_r_data_b, reg_w_data);
+                        reg_wr_index, reg_w_en, reg_w_data, reg_r_data_a, reg_r_data_b);
   datapath: process(clk)
   begin
     if rising_edge(clk) then
@@ -82,15 +84,23 @@ ctrlpath: process(clk)
       else
       -- fetch
         pc <= std_ulogic_vector(unsigned(pc) + 1);
-      -- decode
+      -- decode (type A)
         idex_opcode <= ifid_instr(7 downto 4);
         idex_rega   <= ifid_instr(3 downto 2);
         idex_regb   <= ifid_instr(1 downto 0);
       -- execute
-
+        case idex_opcode is
+        when "1011" =>
+          reg_w_data <= in_port;
+          reg_wr_index <= idex_rega;
+          reg_w_en <= '1';
+        when others =>
+          reg_w_en <= '0';
+        end case;
       -- mem
 
       -- writeback
+
 
       end if;
     end if;
