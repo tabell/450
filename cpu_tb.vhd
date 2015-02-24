@@ -90,13 +90,14 @@ BEGIN
       -- hold reset state for 100 ns.
       wait for 100 ns;	
       rst <= '1';
+      in_port <= "00000011";
       wait for clk_period;
       rst <= '0';
       in_port <= "00001111";
       wait for clk_period;
       in_port <= "00000001";
       wait for clk_period;
-      in_port <= "00000000";
+      in_port <= "00100000";
 
 
       -- insert stimulus here 
