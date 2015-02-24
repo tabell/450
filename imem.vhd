@@ -16,8 +16,10 @@ architecture BHV of imem is
     type ROM_TYPE is array (0 to 127) of std_ulogic_vector (7 downto 0);
 
     constant rom_content : ROM_TYPE := (
-    "11100000", -- IN r0, xx
-    "11100100", -- IN r1, xx
+    "10110000", -- IN r0, xx
+    "10110100", -- IN r1, xx
+    "10111000", -- IN r2, xx
+    "10111100", -- IN r3, xx
     "01000001", -- add r0, r1
 	"00000000",	 -- nop
 	"00000000",  --  nop
@@ -28,10 +30,10 @@ architecture BHV of imem is
 	"00001111",	
 	"10000000",	
 	"10110100",
-	--"11100100",	
+	--"11100100",	-- commented these out randomly because total must = 127
 	--"11110101",	
-	"10000000",
-	"00100010",	 
+	--"10000000",
+	--"00100010",	 
 	"10001011",	
 	"00010010",
 	"10001010",	

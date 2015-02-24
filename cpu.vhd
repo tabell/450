@@ -119,6 +119,7 @@ ctrlpath: process(clk)
       
         pc <= std_ulogic_vector(unsigned(pc) + 1);
         decode0_opcode <= decode0_instr(7 downto 4);
+        in_port_data <= in_port;
 
         -- decode (type A)
         case decode0_opcode is
@@ -140,6 +141,7 @@ ctrlpath: process(clk)
         when "1011" => -- IN (read from input port)
           exec0_alu_mode <= "111"; -- reserved for NOT AN ALU OP
           exec0_in_port     <= in_port_data;
+          exec0_regfile_write_en <= '1';
         when others =>
           exec0_alu_mode <= "111";
           exec0_regfile_write_en <= '0';

@@ -88,16 +88,16 @@ BEGIN
    stim_proc: process
    begin		
       -- hold reset state for 100 ns.
-      wait for 100 ns;	
       rst <= '1';
-      in_port <= "00000011";
-      wait for clk_period;
+      wait for 105 ns;  -- first four instructions fill the registers
       rst <= '0';
-      in_port <= "00001111";
-      wait for clk_period;
-      in_port <= "00000001";
+      in_port <= "00010000";
       wait for clk_period;
       in_port <= "00100000";
+      wait for clk_period;
+      in_port <= "00110000";
+      wait for clk_period;
+      in_port <= "01100000";
 
 
       -- insert stimulus here 
