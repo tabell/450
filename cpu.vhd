@@ -97,7 +97,7 @@ regfile : entity work.register_file port map(clk, rst, regfile_addr_a, regfile_a
                                                        regfile_wr_en);
 alu1 : entity work.alu port map(clk, rst, alu_mode, alu_in_a, alu_in_b, alu_result, alu_n, alu_z);
 
-ctrlpath: process(clk)
+datapath: process(clk)
   begin
     if rising_edge(clk) then
       if rst = '1' then
@@ -124,8 +124,7 @@ ctrlpath: process(clk)
 -- fetch
 -------------------------------------------------------------------
         pc <= std_ulogic_vector(unsigned(pc) + 1);
-        --decode_opcode := decode_instr(7 downto 4);
-                  decode_in_port   <= in_port;
+        decode_in_port   <= in_port;
 
 -----------------------------------------------------------------
 -- decode (type A)
