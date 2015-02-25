@@ -46,7 +46,7 @@ signal pc : std_ulogic_vector(6 downto 0) := (others => '0');
 signal decode0_instr : std_ulogic_vector(7 downto 0) := (others => '0');
 signal decode0_rs_id_a : std_ulogic_vector(1 downto 0) := (others => '0'); -- source register A
 signal decode0_rs_id_b : std_ulogic_vector(1 downto 0) := (others => '0'); -- source register B
-signal decode0_opcode : std_ulogic_vector(3 downto 0) := (others => '0'); -- CPU opcode
+--signal decode0_opcode : std_ulogic_vector(3 downto 0) := (others => '0'); -- CPU opcode
 
 signal exec0_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 signal exec0_rs_id_a : std_ulogic_vector(1 downto 0) := (others => '0'); -- source register index
@@ -77,7 +77,7 @@ signal in_port_data : std_ulogic_vector(7 downto 0) := (others => '0');
 begin
 
   -- entity declarations for instantiations
-  rom : entity work.imem port map(clk, pc, decode0_instr);
+  rom : entity work.imem port map(clk, rst, pc, decode0_instr);
   regfile : entity work.register_file port map(clk, rst, exec0_rs_id_a, exec0_rs_id_b, 
                         exec2_rd_id, exec2_regfile_write_en, exec2_regfile_write_data, exec1_reg_data_a, exec1_reg_data_b);
   alu1 : entity work.alu port map(clk, rst, exec1_alu_mode, exec1_reg_data_a, exec1_reg_data_b, exec2_alu_result, alu_n_flag, alu_z_flag);
@@ -96,7 +96,7 @@ ctrlpath: process(clk)
         pc <= "0000000";
         decode0_rs_id_a <= "00";
         decode0_rs_id_b <= "00";
-        decode0_opcode <= "0000";
+--        decode0_opcode <= "0000";
         exec0_alu_mode <= "000";
         exec0_rs_id_a <= "00";
         exec0_rs_id_b <= "00";
@@ -118,11 +118,11 @@ ctrlpath: process(clk)
       -- fetch
       
         pc <= std_ulogic_vector(unsigned(pc) + 1);
-        decode0_opcode <= decode0_instr(7 downto 4);
+        --decode0_opcode := decode0_instr(7 downto 4);
         in_port_data <= in_port;
 
         -- decode (type A)
-        case decode0_opcode is
+        case decode0_instr(7 downto 4) is
         when "0100" => -- add
           exec0_alu_mode <= "000";
           exec0_regfile_write_en <= '1'; -- will be writing back to reg file
@@ -143,13 +143,13 @@ ctrlpath: process(clk)
           exec0_in_port     <= in_port_data;
           exec0_regfile_write_en <= '1';
         when others =>
-          exec0_alu_mode <= "111";
+          exec0_alu_mode <= "ZZZ";
           exec0_regfile_write_en <= '0';
         end case;
         exec0_rs_id_a   <= decode0_instr(3 downto 2);
         exec0_rs_id_b   <= decode0_instr(1 downto 0);
         exec0_rd_id     <= decode0_instr(3 downto 2);
-        exec0_opcode     <= decode0_opcode;
+        exec0_opcode     <= decode0_instr(7 downto 4);
 
       -- execute 1
         exec1_alu_mode         <= exec0_alu_mode;

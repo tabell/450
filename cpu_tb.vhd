@@ -77,9 +77,9 @@ BEGIN
    -- Clock process definitions
    clk_process :process
    begin
-		clk <= '0';
-		wait for clk_period/2;
 		clk <= '1';
+		wait for clk_period/2;
+		clk <= '0';
 		wait for clk_period/2;
    end process;
  
@@ -89,7 +89,7 @@ BEGIN
    begin		
       -- hold reset state for 100 ns.
       rst <= '1';
-      wait for 105 ns;  -- first four instructions fill the registers
+      wait for 100 ns;  -- first four instructions fill the registers
       rst <= '0';
       in_port <= "00010000";
       wait for clk_period;

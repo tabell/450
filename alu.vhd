@@ -48,17 +48,17 @@ begin
   begin
     if rising_edge(clk) then
       if (rst = '1') then
-        res := "00000000";
+        res := "ZZZZZZZZ";
         n <= '0';
         z <= '0';
       else
         case alu_mode is
-          when "100" => res := std_ulogic_vector(signed(in_a) + signed(in_b));
-          when "101" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
-          when "110" => res := in_a nand in_b;
-          when "111" => res := std_ulogic_vector(shift_right(signed(in_a),to_integer(signed(in_b))));
-          when "000" => res := std_ulogic_vector(shift_left(signed(in_a),to_integer(signed(in_b))));
-          when others => res := "XXXXXXXX";
+          when "000" => res := std_ulogic_vector(signed(in_a) + signed(in_b));
+          when "001" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
+          when "010" => res := in_a nand in_b;
+          when "011" => res := std_ulogic_vector(shift_right(signed(in_a),to_integer(signed(in_b))));
+          when "100" => res := std_ulogic_vector(shift_left(signed(in_a),to_integer(signed(in_b))));
+          when others => res := "ZZZZZZZZ";
         end case;
         if (to_integer(signed(res)) < 0) then
           n <= '1';

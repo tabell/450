@@ -6,6 +6,7 @@ use IEEE.std_logic_ARITH.all;
 entity imem is
     port(
          clk      : in  std_ulogic;
+         rst      : in  std_ulogic;
          addr     : in  std_ulogic_vector (6 downto 0);
          data     : out std_ulogic_vector (7 downto 0)
          );
@@ -154,8 +155,12 @@ p1:    process (clk)
 	 variable add_in : integer := 0;
     begin
         if rising_edge(clk) then
-					 add_in := conv_integer(unsigned(addr));
-                data <= rom_content(add_in);
+        	if rst = '0' then
+				add_in := conv_integer(unsigned(addr));
+		        data <= rom_content(add_in);
+	        else
+	        	data <= "00000000"; -- no-op
+	        end if;
         end if;
     end process;
 end BHV;
