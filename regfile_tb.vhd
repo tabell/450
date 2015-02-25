@@ -27,11 +27,11 @@ ARCHITECTURE behavior OF regfile_tb IS
          rst : IN  std_ulogic;
          rd_index_a : IN  std_ulogic_vector(1 downto 0);
          rd_index_b : IN  std_ulogic_vector(1 downto 0);
-         wr_index : IN  std_ulogic_vector(1 downto 0);
-         wr_en : IN  std_ulogic;
-         wr_data : IN  std_ulogic_vector(7 downto 0);
          rd_data_a : OUT  std_ulogic_vector(7 downto 0);
-         rd_data_b : OUT  std_ulogic_vector(7 downto 0)
+         rd_data_b : OUT  std_ulogic_vector(7 downto 0);
+         wr_index : IN  std_ulogic_vector(1 downto 0);
+         wr_data : IN  std_ulogic_vector(7 downto 0);
+         wr_en : IN  std_ulogic
         );
     END COMPONENT;
     

@@ -30,15 +30,15 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity register_file is
-port ( 	clk: in std_ulogic;
+port ( 		clk: in std_ulogic;
 			rst: in std_ulogic;
 			rd_index_a: in std_ulogic_vector(1 downto 0);
 			rd_index_b: in std_ulogic_vector(1 downto 0);
-			wr_index: in std_ulogic_vector(1 downto 0);
-			wr_en: in std_ulogic;
-			wr_data: in std_ulogic_vector(7 downto 0);
 			rd_data_a: out std_ulogic_vector(7 downto 0);
-			rd_data_b: out std_ulogic_vector(7 downto 0)
+			rd_data_b: out std_ulogic_vector(7 downto 0);
+			wr_index: in std_ulogic_vector(1 downto 0);
+			wr_data: in std_ulogic_vector(7 downto 0);
+			wr_en: in std_ulogic
 			);
 			
 end register_file;

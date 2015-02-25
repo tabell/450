@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="21" />
+   <WVObjectSize size="22" />
    <wvobject fp_name="/cpu_tb/rst" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">rst</obj_property>
       <obj_property name="ObjectShortName">rst</obj_property>
@@ -58,13 +58,6 @@
       <obj_property name="ElementShortName">exec2_regfile_write_en</obj_property>
       <obj_property name="ObjectShortName">exec2_regfile_write_en</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/in_port" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">in_port[7:0]</obj_property>
-      <obj_property name="ObjectShortName">in_port[7:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#008080</obj_property>
-   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/exec0_in_port" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">exec0_in_port[7:0]</obj_property>
       <obj_property name="ObjectShortName">exec0_in_port[7:0]</obj_property>
@@ -83,6 +76,13 @@
       <obj_property name="ElementShortName">exec2_regfile_write_data[7:0]</obj_property>
       <obj_property name="ObjectShortName">exec2_regfile_write_data[7:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/in_port" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">in_port[7:0]</obj_property>
+      <obj_property name="ObjectShortName">in_port[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#008080</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile/regfile" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile[0:3]</obj_property>
@@ -149,5 +149,9 @@
       <obj_property name="ElementShortName">exec2_alu_result[7:0]</obj_property>
       <obj_property name="ObjectShortName">exec2_alu_result[7:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/alu1/in_a" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">in_a[7:0]</obj_property>
+      <obj_property name="ObjectShortName">in_a[7:0]</obj_property>
    </wvobject>
 </wave_config>
