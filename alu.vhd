@@ -53,22 +53,22 @@ begin
           when "001" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
           when "010" => res := in_a nand in_b;
           when "011" => res := std_ulogic_vector(shift_right(signed(in_a),to_integer(unsigned(in_b))));
-          when "100" => 
-            tmp := std_ulogic_vector(shift_left(signed(in_a),to_integer(unsigned(in_b(8 downto 0)))));
-            res := tmp(7 downto 0);
+          --when "100" => 
+          --  tmp := std_ulogic_vector(shift_left(signed(in_a),to_integer(unsigned(in_b(8 downto 0)))));
+          --  res := tmp(7 downto 0);
           when others => res := "ZZZZZZZZ";
         end case;
-      --  --if (to_integer(signed(res)) < 0) then
-      --  --  n <= '1';
-      --  --else
-      --  --  n <= '0';
-      --  --end if; -- end if neg
-      --  --if (to_integer(signed(res)) = 0) then
-      --  --  z <= '1';
-      --  --else
-      --  --  z <= '0';
-      --  --end if; -- end if zero
-      result <= "01010101";
+        if (to_integer(signed(res)) < 0) then
+          n <= '1';
+        else
+          n <= '0';
+        end if; -- end if neg
+        if (to_integer(signed(res)) = 0) then
+          z <= '1';
+        else
+          z <= '0';
+        end if; -- end if zero
+      result <= res;
   end process;
 end Behavioral;
 

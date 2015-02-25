@@ -45,11 +45,11 @@ function opcode_to_str(code : std_ulogic_vector(2 downto 0)) return string is
 variable ret : string(1 to 5);
 begin
   case code is
-    when "100" => ret := "  +  ";
-    when "101" => ret := "  -  ";
-    when "110" => ret := " !&  ";
-    when "111" => ret := "  << ";
-    when "000" => ret := "  >> ";
+    when "000" => ret := "  +  ";
+    when "001" => ret := "  -  ";
+    when "010" => ret := " !&  ";
+    when "011" => ret := "  << ";
+    when "100" => ret := "  >> ";
     when others => ret := "#####";
   end case;
   return ret;
@@ -111,7 +111,7 @@ BEGIN
  
     -- test vector stim process
     process is
-    file vec_file : text is in "testvectors2.dat";
+    file vec_file : text is in "testvectors3.dat";
     variable vec_line : line;
     variable good : boolean;
     variable vec_var : std_ulogic_vector(29 downto 0);
