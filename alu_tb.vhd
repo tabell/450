@@ -118,7 +118,7 @@ BEGIN
     variable previous_result : std_ulogic_vector(10 downto 0);
     begin
       report("Starting test" & opcode_to_str("111"));
-      wait for 105 ns; 
+      wait for 100 ns; 
       while not endfile(VEC_FILE) loop
         readline (VEC_FILE, VEC_LINE);
         read (VEC_LINE, VEC_VAR);
@@ -132,7 +132,7 @@ BEGIN
         end if;
         previous_result := VEC_VAR(10 downto 0);
       end loop;
-      wait;
+      wait for 200 ns;
     end process;
    
 
