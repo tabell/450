@@ -1,14 +1,14 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: Alex Bell & Alex LaJeunesse
+-- Engineer: 
 -- 
 -- Create Date:    10:50:52 02/06/2015 
 -- Design Name: 
 -- Module Name:    cpu - Behavioral 
--- Project Name: UVic elec 450 project
--- Target Devices: spartan3, spartan6
--- Tool versions: Xilinx ISE 14.7 Linux x86-64
--- Description: 8-bit single-cycle pipelined cpu core
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
 --
 -- Dependencies: 
 --
@@ -67,6 +67,8 @@ signal exec0_reg_wr_src_mux : std_ulogic := '0';
 signal exec0_reg_wr_en : std_ulogic := '0';
 signal exec0_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 -- type A instruction
+signal exec0_reg_addr_a : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
+signal exec0_reg_addr_b : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 signal exec0_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 -- IN instruction
 signal exec0_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
@@ -76,9 +78,6 @@ signal exec1_reg_wr_src_mux : std_ulogic := '0';
 signal exec1_in_data : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec1_reg_wr_en : std_ulogic := '0';
 signal exec1_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
-
-signal alu_op_a_fwd_enable : std_ulogic := '0';
-
 
 --------------------------------------------------------------------
 ------------------ REFACTORED ABOVE THIS LINE ----------------------
@@ -97,15 +96,7 @@ regfile : entity work.register_file port map(clk, rst, regfile_addr_a, regfile_a
                                                        regfile_addr_w, regfile_data_w, 
                                                        regfile_wr_en);
 alu1 : entity work.alu port map(clk, rst, alu_mode, alu_in_a, alu_in_b, alu_result, alu_n, alu_z);
-comb: process(alu_op_a_fwd_enable,regfile_data_a,alu_result)
-begin
 
-        if alu_op_a_fwd_enable = '0' then
-          alu_in_a    <= regfile_data_a;
-        else
-          alu_in_a    <= alu_result;
-        end if;
-end process;
 datapath: process(clk)
   begin
     if rising_edge(clk) then
@@ -140,55 +131,30 @@ datapath: process(clk)
 -----------------------------------------------------------------
         case decode_instr(7 downto 4) is -- opcode
         when "0100" => -- add
-          if decode_instr(3 downto 2) = exec0_reg_addr_w then
-            alu_op_a_fwd_enable <= '0';
-          else
-            alu_op_a_fwd_enable <= '0';
-          end if;
           exec0_alu_mode <= "000";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "0101" => -- sub 
-          if decode_instr(3 downto 2) = exec0_reg_addr_w then
-            alu_op_a_fwd_enable <= '1';
-          else
-            alu_op_a_fwd_enable <= '0';
-          end if;
           exec0_alu_mode <= "001";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "0110" => -- shl
-          if decode_instr(3 downto 2) = exec0_reg_addr_w then
-            alu_op_a_fwd_enable <= '1';
-          else
-            alu_op_a_fwd_enable <= '0';
-          end if;
           exec0_alu_mode <= "010";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "0111" => -- shr
-          if decode_instr(3 downto 2) = exec0_reg_addr_w then
-            alu_op_a_fwd_enable <= '1';
-          else
-            alu_op_a_fwd_enable <= '0';
-          end if;
           exec0_alu_mode <= "011";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "1000" => -- nand
-          if decode_instr(3 downto 2) = exec0_reg_addr_w then
-            alu_op_a_fwd_enable <= '1';
-          else
-            alu_op_a_fwd_enable <= '0';
-          end if;
           exec0_alu_mode <= "100";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
@@ -199,13 +165,9 @@ datapath: process(clk)
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= '0';
           exec0_in_port <= decode_in_port;
-          alu_op_a_fwd_enable <= '0';
-        when "1100" => -- OUT (register to output port)
-
         when others =>
           exec0_alu_mode <= "ZZZ";
           exec0_reg_wr_en <= '0';
-          alu_op_a_fwd_enable <= '0';
         end case;
 
         exec0_reg_addr_w   <= decode_instr(3 downto 2);
@@ -215,6 +177,7 @@ datapath: process(clk)
         exec1_reg_wr_src_mux <= exec0_reg_wr_src_mux;
       -- TYPE A INSTRUCTION
         alu_mode        <= exec0_alu_mode;
+        alu_in_a        <= regfile_data_a;
         alu_in_b        <= regfile_data_b;
         exec1_reg_addr_w <= exec0_reg_addr_w;
         exec1_reg_wr_en        <= exec0_reg_wr_en;
@@ -229,7 +192,7 @@ datapath: process(clk)
           regfile_data_w <= exec1_in_port;
         else
           regfile_data_w <= alu_result;
-        end if; 
+        end if;
       end if;
     end if;
   end process;

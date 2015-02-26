@@ -93,11 +93,11 @@ BEGIN
       rst <= '0';
       in_port <= "00000001";
       wait for clk_period;      
-      in_port <= "00000010";
-      wait for clk_period;
       in_port <= "00000011";
       wait for clk_period;
-      in_port <= "01000100";
+      in_port <= "00000101";
+      wait for clk_period;
+      in_port <= "00000111";
       wait for clk_period;
       --in_port <= "01000101";
       --wait for clk_period*3;
