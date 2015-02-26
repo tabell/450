@@ -100,8 +100,9 @@ BEGIN
       in_port <= "01000000";
       wait for clk_period;
       in_port <= "01000001";
+      wait for clk_period*3;
 
-
+      in_port <= "00000010";
       -- insert stimulus here 
 
       wait;
