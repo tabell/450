@@ -95,6 +95,7 @@ BEGIN
       wait for clk_period;      
       in_port <= "00010000";
       wait for clk_period;
+      wait for clk_period;
       in_port <= "00100000";
       wait for clk_period;
       in_port <= "01000000";

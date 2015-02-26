@@ -1,14 +1,14 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Alex Bell & Alex LaJeunesse
 -- 
 -- Create Date:    10:50:52 02/06/2015 
 -- Design Name: 
 -- Module Name:    cpu - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
+-- Project Name: UVic elec 450 project
+-- Target Devices: spartan3, spartan6
+-- Tool versions: Xilinx ISE 14.7 Linux x86-64
+-- Description: 8-bit single-cycle pipelined cpu core
 --
 -- Dependencies: 
 --
@@ -78,6 +78,9 @@ signal exec1_reg_wr_src_mux : std_ulogic := '0';
 signal exec1_in_data : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec1_reg_wr_en : std_ulogic := '0';
 signal exec1_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
+
+signal alu_op_a_fwd_enable : std_ulogic := '0';
+
 
 --------------------------------------------------------------------
 ------------------ REFACTORED ABOVE THIS LINE ----------------------
@@ -165,6 +168,8 @@ datapath: process(clk)
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= '0';
           exec0_in_port <= decode_in_port;
+        when "1100" => -- OUT (register to output port)
+
         when others =>
           exec0_alu_mode <= "ZZZ";
           exec0_reg_wr_en <= '0';
