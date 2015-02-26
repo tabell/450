@@ -47,8 +47,6 @@ architecture Behavioral of register_file is
 type registers is array(0 to 3) of std_ulogic_vector(7 downto 0); 
 signal regfile : registers;
 begin
-	rd_data_a <= regfile(to_integer(unsigned(rd_index_a)));
-	rd_data_b <= regfile(to_integer(unsigned(rd_index_b)));
 	process (clk)
 	begin
 		if rising_edge(clk) then
@@ -56,13 +54,17 @@ begin
 				regfile(0) <= "00000001";
 				regfile(1) <= "00000010";
 				regfile(2) <= "00000100";
-				regfile(3) <= "00001000";		
+				regfile(3) <= "00001000";
 			else
 				if (wr_en = '1') then
 					regfile(to_integer(unsigned(wr_index))) <= wr_data;
 				end if;
 			end if;
 		end if;
+		--if falling_edge(clk) then
+			rd_data_a <= regfile(to_integer(unsigned(rd_index_a)));
+			rd_data_b <= regfile(to_integer(unsigned(rd_index_b)));
+		--end if;
 	end process;
 end Behavioral;
 

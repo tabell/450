@@ -105,7 +105,7 @@ BEGIN
       wr_index <= "10";
       wr_data <= "00000100";
       wr_en <= '1';
-      wait for clk_period;
+      wait for clk_period*2;
       wr_en <= '0';
       wait for clk_period;
       wr_index <= "11";
