@@ -67,8 +67,6 @@ signal exec0_reg_wr_src_mux : std_ulogic := '0';
 signal exec0_reg_wr_en : std_ulogic := '0';
 signal exec0_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 -- type A instruction
-signal exec0_reg_addr_a : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
-signal exec0_reg_addr_b : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 signal exec0_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 -- IN instruction
 signal exec0_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
@@ -99,7 +97,15 @@ regfile : entity work.register_file port map(clk, rst, regfile_addr_a, regfile_a
                                                        regfile_addr_w, regfile_data_w, 
                                                        regfile_wr_en);
 alu1 : entity work.alu port map(clk, rst, alu_mode, alu_in_a, alu_in_b, alu_result, alu_n, alu_z);
+comb: process(alu_op_a_fwd_enable,regfile_data_a,alu_result)
+begin
 
+        if alu_op_a_fwd_enable = '0' then
+          alu_in_a    <= regfile_data_a;
+        else
+          alu_in_a    <= alu_result;
+        end if;
+end process;
 datapath: process(clk)
   begin
     if rising_edge(clk) then
@@ -135,7 +141,7 @@ datapath: process(clk)
         case decode_instr(7 downto 4) is -- opcode
         when "0100" => -- add
           if decode_instr(3 downto 2) = exec0_reg_addr_w then
-            alu_op_a_fwd_enable <= '1';
+            alu_op_a_fwd_enable <= '0';
           else
             alu_op_a_fwd_enable <= '0';
           end if;
@@ -209,11 +215,6 @@ datapath: process(clk)
         exec1_reg_wr_src_mux <= exec0_reg_wr_src_mux;
       -- TYPE A INSTRUCTION
         alu_mode        <= exec0_alu_mode;
-        if alu_op_a_fwd_enable = '0' then
-          alu_in_a    <= regfile_data_a;
-        else
-          alu_in_a    <= alu_result;
-        end if;
         alu_in_b        <= regfile_data_b;
         exec1_reg_addr_w <= exec0_reg_addr_w;
         exec1_reg_wr_en        <= exec0_reg_wr_en;
@@ -228,7 +229,7 @@ datapath: process(clk)
           regfile_data_w <= exec1_in_port;
         else
           regfile_data_w <= alu_result;
-        end if;
+        end if; 
       end if;
     end if;
   end process;
