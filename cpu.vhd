@@ -134,30 +134,55 @@ datapath: process(clk)
 -----------------------------------------------------------------
         case decode_instr(7 downto 4) is -- opcode
         when "0100" => -- add
+          if decode_instr(3 downto 2) = exec0_reg_addr_w then
+            alu_op_a_fwd_enable <= '1';
+          else
+            alu_op_a_fwd_enable <= '0';
+          end if;
           exec0_alu_mode <= "000";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "0101" => -- sub 
+          if decode_instr(3 downto 2) = exec0_reg_addr_w then
+            alu_op_a_fwd_enable <= '1';
+          else
+            alu_op_a_fwd_enable <= '0';
+          end if;
           exec0_alu_mode <= "001";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "0110" => -- shl
+          if decode_instr(3 downto 2) = exec0_reg_addr_w then
+            alu_op_a_fwd_enable <= '1';
+          else
+            alu_op_a_fwd_enable <= '0';
+          end if;
           exec0_alu_mode <= "010";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "0111" => -- shr
+          if decode_instr(3 downto 2) = exec0_reg_addr_w then
+            alu_op_a_fwd_enable <= '1';
+          else
+            alu_op_a_fwd_enable <= '0';
+          end if;
           exec0_alu_mode <= "011";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
           regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
         when "1000" => -- nand
+          if decode_instr(3 downto 2) = exec0_reg_addr_w then
+            alu_op_a_fwd_enable <= '1';
+          else
+            alu_op_a_fwd_enable <= '0';
+          end if;
           exec0_alu_mode <= "100";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
@@ -168,11 +193,13 @@ datapath: process(clk)
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= '0';
           exec0_in_port <= decode_in_port;
+          alu_op_a_fwd_enable <= '0';
         when "1100" => -- OUT (register to output port)
 
         when others =>
           exec0_alu_mode <= "ZZZ";
           exec0_reg_wr_en <= '0';
+          alu_op_a_fwd_enable <= '0';
         end case;
 
         exec0_reg_addr_w   <= decode_instr(3 downto 2);
@@ -182,7 +209,11 @@ datapath: process(clk)
         exec1_reg_wr_src_mux <= exec0_reg_wr_src_mux;
       -- TYPE A INSTRUCTION
         alu_mode        <= exec0_alu_mode;
-        alu_in_a        <= regfile_data_a;
+        if alu_op_a_fwd_enable = '0' then
+          alu_in_a    <= regfile_data_a;
+        else
+          alu_in_a    <= alu_result;
+        end if;
         alu_in_b        <= regfile_data_b;
         exec1_reg_addr_w <= exec0_reg_addr_w;
         exec1_reg_wr_en        <= exec0_reg_wr_en;
