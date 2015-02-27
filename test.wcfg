@@ -137,5 +137,6 @@
    <wvobject fp_name="/cpu_tb/out_port" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">out_port[7:0]</obj_property>
       <obj_property name="ObjectShortName">out_port[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
 </wave_config>

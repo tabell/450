@@ -126,13 +126,15 @@ datapath: process(clk)
 -------------------------------------------------------------------
         pc <= std_ulogic_vector(unsigned(pc) + 1);
         decode_in_port   <= in_port;
-
 -----------------------------------------------------------------
 -- decode (type A)
 -----------------------------------------------------------------
         case decode_instr(7 downto 4) is -- opcode
-        when "0100" => -- add
-          exec0_alu_mode <= "000";
+        ----- ADD ----- SUB --- NAND --- SHR ---- SHL ----------
+        when "0100" | "0101" | "0110" | "0111" | "1000" =>
+        -- this is a hack because the ALU opcodes are bits 0 2 and 3 of the ISA opcode
+          exec0_alu_mode(2) <= decode_instr(7);
+          exec0_alu_mode(1 downto 0) <= decode_instr(5 downto 4);
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           if decode_instr(1 downto 0) = regfile_addr_w then
             forwarding_b <= '1';
@@ -148,79 +150,7 @@ datapath: process(clk)
             forwarding_a <= '0';
             regfile_addr_a   <= decode_instr(3 downto 2);
           end if;
-          exec0_reg_wr_src_mux <= '1';
-        when "0101" => -- sub 
-          exec0_alu_mode <= "001";
-          exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          if decode_instr(1 downto 0) = regfile_addr_w then
-            forwarding_b <= '1';
-            regfile_addr_b   <= "ZZ";
-          else
-            forwarding_b <= '0';
-            regfile_addr_b   <= decode_instr(1 downto 0);
-          end if;
-          if decode_instr(3 downto 2) = regfile_addr_w then
-            forwarding_a <= '1';
-            regfile_addr_a   <= "ZZ";
-          else
-            forwarding_a <= '0';
-            regfile_addr_a   <= decode_instr(3 downto 2);
-          end if;
-          exec0_reg_wr_src_mux <= '1';
-        when "0110" => -- shl
-          exec0_alu_mode <= "010";
-          exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          if decode_instr(1 downto 0) = regfile_addr_w then
-            forwarding_b <= '1';
-            regfile_addr_b   <= "ZZ";
-          else
-            forwarding_b <= '0';
-            regfile_addr_b   <= decode_instr(1 downto 0);
-          end if;
-          if decode_instr(3 downto 2) = regfile_addr_w then
-            forwarding_a <= '1';
-            regfile_addr_a   <= "ZZ";
-          else
-            forwarding_a <= '0';
-            regfile_addr_a   <= decode_instr(3 downto 2);
-          end if;
-          exec0_reg_wr_src_mux <= '1';
-        when "0111" => -- shr
-          exec0_alu_mode <= "011";
-          exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          if decode_instr(1 downto 0) = regfile_addr_w then
-            forwarding_b <= '1';
-            regfile_addr_b   <= "ZZ";
-          else
-            forwarding_b <= '0';
-            regfile_addr_b   <= decode_instr(1 downto 0);
-          end if;
-          if decode_instr(3 downto 2) = regfile_addr_w then
-            forwarding_a <= '1';
-            regfile_addr_a   <= "ZZ";
-          else
-            forwarding_a <= '0';
-            regfile_addr_a   <= decode_instr(3 downto 2);
-          end if;
-          exec0_reg_wr_src_mux <= '1';
-        when "1000" => -- nand
-          exec0_alu_mode <= "100";
-          exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          if decode_instr(1 downto 0) = regfile_addr_w then
-            forwarding_b <= '1';
-            regfile_addr_b   <= "ZZ";
-          else
-            forwarding_b <= '0';
-            regfile_addr_b   <= decode_instr(1 downto 0);
-          end if;
-          if decode_instr(3 downto 2) = regfile_addr_w then
-            forwarding_a <= '1';
-            regfile_addr_a   <= "ZZ";
-          else
-            forwarding_a <= '0';
-            regfile_addr_a   <= decode_instr(3 downto 2);
-          end if;
-          exec0_reg_wr_src_mux <= '1';
+          exec0_reg_wr_src_mux <= '1'; 
         when "1011" => -- IN (read from input port)
           exec0_alu_mode <= "111"; -- reserved for NOT AN ALU OP
           exec0_reg_wr_en <= '1';
