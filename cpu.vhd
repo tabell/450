@@ -67,8 +67,6 @@ signal exec0_reg_wr_src_mux : std_ulogic := '0';
 signal exec0_reg_wr_en : std_ulogic := '0';
 signal exec0_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 -- type A instruction
-signal exec0_reg_addr_a : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
-signal exec0_reg_addr_b : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 signal exec0_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 -- IN instruction
 signal exec0_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
@@ -79,6 +77,8 @@ signal exec1_in_data : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec1_reg_wr_en : std_ulogic := '0';
 signal exec1_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 
+signal forwarding_a : std_ulogic := '0';
+signal forwarding_b : std_ulogic := '0';
 --------------------------------------------------------------------
 ------------------ REFACTORED ABOVE THIS LINE ----------------------
 --------------------------------------------------------------------
@@ -134,8 +134,19 @@ datapath: process(clk)
           exec0_alu_mode <= "000";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           regfile_addr_a   <= decode_instr(3 downto 2);
-          regfile_addr_b   <= decode_instr(1 downto 0);
           exec0_reg_wr_src_mux <= '1';
+          if decode_instr(1 downto 0) = regfile_addr_w then
+            forwarding_b <= '1';
+            regfile_addr_a   <= decode_instr(1 downto 0);
+            regfile_addr_b   <= "ZZ";
+          elsif decode_instr(3 downto 2) = regfile_addr_w then
+            forwarding_a <= '1';
+            regfile_addr_a   <= "ZZ";
+            regfile_addr_b   <= decode_instr(1 downto 0);
+          else
+            forwarding_a <= '0';
+            forwarding_b <= '0';
+          end if;
         when "0101" => -- sub 
           exec0_alu_mode <= "001";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
@@ -170,6 +181,12 @@ datapath: process(clk)
           exec0_reg_wr_en <= '0';
         end case;
 
+        if exec0_reg_wr_en = '0' then
+          forwarding_a <= '0';
+          forwarding_b <= '0';
+        end if;
+
+
         exec0_reg_addr_w   <= decode_instr(3 downto 2);
       -----------------------------------------------------------------
       -- execute 1
@@ -178,7 +195,11 @@ datapath: process(clk)
       -- TYPE A INSTRUCTION
         alu_mode        <= exec0_alu_mode;
         alu_in_a        <= regfile_data_a;
-        alu_in_b        <= regfile_data_b;
+        if forwarding_b = '1' then
+          alu_in_b        <= alu_result;
+        else
+          alu_in_b        <= regfile_data_b;
+        end if;
         exec1_reg_addr_w <= exec0_reg_addr_w;
         exec1_reg_wr_en        <= exec0_reg_wr_en;
       -- IN instruction
