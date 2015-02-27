@@ -47,7 +47,6 @@ begin
   variable res : std_ulogic_vector(7 downto 0);
   variable tmp : std_ulogic_vector(23 downto 0);
   begin
-
         case alu_mode is
           when "000" => res := std_ulogic_vector(signed(in_a) + signed(in_b));
           when "001" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
@@ -56,7 +55,7 @@ begin
           --when "100" => 
           --  tmp := std_ulogic_vector(shift_left(signed(in_a),to_integer(unsigned(in_b(8 downto 0)))));
           --  res := tmp(7 downto 0);
-          when others => res := "ZZZZZZZZ";
+          when others => res := "00000000";
         end case;
         if (to_integer(signed(res)) < 0) then
           n <= '1';
