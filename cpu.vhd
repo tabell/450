@@ -133,43 +133,92 @@ datapath: process(clk)
         when "0100" => -- add
           exec0_alu_mode <= "000";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          regfile_addr_a   <= decode_instr(3 downto 2);
-          exec0_reg_wr_src_mux <= '1';
           if decode_instr(1 downto 0) = regfile_addr_w then
             forwarding_b <= '1';
-            regfile_addr_a   <= decode_instr(1 downto 0);
             regfile_addr_b   <= "ZZ";
-          elsif decode_instr(3 downto 2) = regfile_addr_w then
+          else
+            forwarding_b <= '0';
+            regfile_addr_b   <= decode_instr(1 downto 0);
+          end if;
+          if decode_instr(3 downto 2) = regfile_addr_w then
             forwarding_a <= '1';
             regfile_addr_a   <= "ZZ";
-            regfile_addr_b   <= decode_instr(1 downto 0);
           else
             forwarding_a <= '0';
-            forwarding_b <= '0';
+            regfile_addr_a   <= decode_instr(3 downto 2);
           end if;
+          exec0_reg_wr_src_mux <= '1';
         when "0101" => -- sub 
           exec0_alu_mode <= "001";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          regfile_addr_a   <= decode_instr(3 downto 2);
-          regfile_addr_b   <= decode_instr(1 downto 0);
+          if decode_instr(1 downto 0) = regfile_addr_w then
+            forwarding_b <= '1';
+            regfile_addr_b   <= "ZZ";
+          else
+            forwarding_b <= '0';
+            regfile_addr_b   <= decode_instr(1 downto 0);
+          end if;
+          if decode_instr(3 downto 2) = regfile_addr_w then
+            forwarding_a <= '1';
+            regfile_addr_a   <= "ZZ";
+          else
+            forwarding_a <= '0';
+            regfile_addr_a   <= decode_instr(3 downto 2);
+          end if;
           exec0_reg_wr_src_mux <= '1';
         when "0110" => -- shl
           exec0_alu_mode <= "010";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          regfile_addr_a   <= decode_instr(3 downto 2);
-          regfile_addr_b   <= decode_instr(1 downto 0);
+          if decode_instr(1 downto 0) = regfile_addr_w then
+            forwarding_b <= '1';
+            regfile_addr_b   <= "ZZ";
+          else
+            forwarding_b <= '0';
+            regfile_addr_b   <= decode_instr(1 downto 0);
+          end if;
+          if decode_instr(3 downto 2) = regfile_addr_w then
+            forwarding_a <= '1';
+            regfile_addr_a   <= "ZZ";
+          else
+            forwarding_a <= '0';
+            regfile_addr_a   <= decode_instr(3 downto 2);
+          end if;
           exec0_reg_wr_src_mux <= '1';
         when "0111" => -- shr
           exec0_alu_mode <= "011";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          regfile_addr_a   <= decode_instr(3 downto 2);
-          regfile_addr_b   <= decode_instr(1 downto 0);
+          if decode_instr(1 downto 0) = regfile_addr_w then
+            forwarding_b <= '1';
+            regfile_addr_b   <= "ZZ";
+          else
+            forwarding_b <= '0';
+            regfile_addr_b   <= decode_instr(1 downto 0);
+          end if;
+          if decode_instr(3 downto 2) = regfile_addr_w then
+            forwarding_a <= '1';
+            regfile_addr_a   <= "ZZ";
+          else
+            forwarding_a <= '0';
+            regfile_addr_a   <= decode_instr(3 downto 2);
+          end if;
           exec0_reg_wr_src_mux <= '1';
         when "1000" => -- nand
           exec0_alu_mode <= "100";
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
-          regfile_addr_a   <= decode_instr(3 downto 2);
-          regfile_addr_b   <= decode_instr(1 downto 0);
+          if decode_instr(1 downto 0) = regfile_addr_w then
+            forwarding_b <= '1';
+            regfile_addr_b   <= "ZZ";
+          else
+            forwarding_b <= '0';
+            regfile_addr_b   <= decode_instr(1 downto 0);
+          end if;
+          if decode_instr(3 downto 2) = regfile_addr_w then
+            forwarding_a <= '1';
+            regfile_addr_a   <= "ZZ";
+          else
+            forwarding_a <= '0';
+            regfile_addr_a   <= decode_instr(3 downto 2);
+          end if;
           exec0_reg_wr_src_mux <= '1';
         when "1011" => -- IN (read from input port)
           exec0_alu_mode <= "111"; -- reserved for NOT AN ALU OP
@@ -199,6 +248,11 @@ datapath: process(clk)
           alu_in_b        <= alu_result;
         else
           alu_in_b        <= regfile_data_b;
+        end if;
+        if forwarding_a = '1' then
+          alu_in_a        <= alu_result;
+        else
+          alu_in_a        <= regfile_data_a;
         end if;
         exec1_reg_addr_w <= exec0_reg_addr_w;
         exec1_reg_wr_en        <= exec0_reg_wr_en;
