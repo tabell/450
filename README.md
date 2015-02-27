@@ -6,11 +6,12 @@
 - Instruction memory containing 127 bytes of instructions (mostly No-ops at the moment)
 - 4 stage pipelined CPU core implementing all ALU operations (with operand forwarding)
 - IN instruction to read from data port and OUT to read register to out port
+- MOV Ra <- Rb
+
+## TODO
+- Shift left in ALU currently disabled
 
 ## Goals:
-- Complete Type-A instructions (MOV)
- - Shift left in ALU currently disabled
 - Type B instructions including 3 branch instructions and RETURN
 - Two-byte L-format instructions: Load, Store and Load Immediate
-
 

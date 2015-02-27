@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="21" />
+   <WVObjectSize size="22" />
    <wvobject fp_name="/cpu_tb/clk" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -33,18 +33,6 @@
    <wvobject fp_name="/cpu_tb/uut/decode_instr" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">decode_instr[7:0]</obj_property>
       <obj_property name="ObjectShortName">decode_instr[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/regfile_addr_a" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile_addr_a[1:0]</obj_property>
-      <obj_property name="ObjectShortName">regfile_addr_a[1:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/regfile_data_a" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile_data_a[7:0]</obj_property>
-      <obj_property name="ObjectShortName">regfile_data_a[7:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#808000</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile_addr_b" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_addr_b[1:0]</obj_property>
@@ -83,6 +71,23 @@
       <obj_property name="ElementShortName">regfile_addr_w[1:0]</obj_property>
       <obj_property name="ObjectShortName">regfile_addr_w[1:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/regfile_addr_a" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile_addr_a[1:0]</obj_property>
+      <obj_property name="ObjectShortName">regfile_addr_a[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/regfile_data_a" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile_data_a[7:0]</obj_property>
+      <obj_property name="ObjectShortName">regfile_data_a[7:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#808000</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/exec1_mov_data" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">exec1_mov_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">exec1_mov_data[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile_data_w" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_data_w[7:0]</obj_property>

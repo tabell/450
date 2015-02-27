@@ -62,7 +62,7 @@ signal alu_z : std_ulogic;
 signal decode_instr : std_ulogic_vector(7 downto 0) := (others => '0');
 signal decode_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
 
-signal exec0_reg_wr_src_mux : std_ulogic := '0';
+signal exec0_reg_wr_src_mux : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 
 signal exec0_reg_wr_en : std_ulogic := '0';
 signal exec0_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
@@ -73,10 +73,12 @@ signal exec0_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec0_out_port : std_ulogic := '0';
 
 
-signal exec1_reg_wr_src_mux : std_ulogic := '0';
+signal exec1_reg_wr_src_mux : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 signal exec1_in_data : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec1_reg_wr_en : std_ulogic := '0';
 signal exec1_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
+
+signal exec1_mov_data : std_ulogic_vector(7 downto 0) := (others => '0'); -- 
 
 signal forwarding_a : std_ulogic := '0';
 signal forwarding_b : std_ulogic := '0';
@@ -150,11 +152,11 @@ datapath: process(clk)
             forwarding_a <= '0';
             regfile_addr_a   <= decode_instr(3 downto 2);
           end if;
-          exec0_reg_wr_src_mux <= '1'; 
+          exec0_reg_wr_src_mux <= "01"; 
         when "1011" => -- IN (read from input port)
           exec0_alu_mode <= "111"; -- reserved for NOT AN ALU OP
           exec0_reg_wr_en <= '1';
-          exec0_reg_wr_src_mux <= '0';
+          exec0_reg_wr_src_mux <= "00";
           exec0_in_port <= decode_in_port;
         when others =>
           exec0_alu_mode <= "ZZZ";
@@ -167,6 +169,14 @@ datapath: process(clk)
         else
           exec0_out_port <= '0';
         end if;
+
+        if decode_instr(7 downto 4) = "1101" then -- MOV
+          regfile_addr_a <= decode_instr(1 downto 0); -- source register
+          exec0_reg_addr_w <= decode_instr(3 downto 2); -- destination register
+          exec0_reg_wr_en <= '1';
+          exec0_reg_wr_src_mux <= "10";
+        end if;
+
           
         if exec0_reg_wr_en = '0' then
           forwarding_a <= '0';
@@ -196,6 +206,7 @@ datapath: process(clk)
         exec1_reg_wr_en        <= exec0_reg_wr_en;
       -- IN instruction
         exec1_in_port <= exec0_in_port;
+        exec1_mov_data <= regfile_data_a;
 
       -- OUT instruction
       if exec0_out_port = '1' then
@@ -208,10 +219,14 @@ datapath: process(clk)
       -----------------------------------------------------------------
         regfile_addr_w <= exec1_reg_addr_w;
         regfile_wr_en <= exec1_reg_wr_en;
-        if exec1_reg_wr_src_mux = '0' then
+        if exec1_reg_wr_src_mux = "00" then
           regfile_data_w <= exec1_in_port;
-        else
+        elsif exec1_reg_wr_src_mux = "01" then
           regfile_data_w <= alu_result;
+        elsif exec1_reg_wr_src_mux = "10" then
+          regfile_data_w <= exec1_mov_data;
+        elsif exec1_reg_wr_src_mux = "11" then
+          regfile_data_w <= "ZZZZZZZZ";
         end if;
       end if;
     end if;
