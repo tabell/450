@@ -70,6 +70,7 @@ signal exec0_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); --
 signal exec0_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 -- IN instruction
 signal exec0_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
+signal exec0_out_port : std_ulogic := '0';
 
 
 signal exec1_reg_wr_src_mux : std_ulogic := '0';
@@ -230,6 +231,13 @@ datapath: process(clk)
           exec0_reg_wr_en <= '0';
         end case;
 
+        if decode_instr(7 downto 4) = "1100" then -- OUT (register to output port)
+          regfile_addr_a <= decode_instr(3 downto 2);
+          exec0_out_port <= '1';
+        else
+          exec0_out_port <= '0';
+        end if;
+          
         if exec0_reg_wr_en = '0' then
           forwarding_a <= '0';
           forwarding_b <= '0';
@@ -258,6 +266,13 @@ datapath: process(clk)
         exec1_reg_wr_en        <= exec0_reg_wr_en;
       -- IN instruction
         exec1_in_port <= exec0_in_port;
+
+      -- OUT instruction
+      if exec0_out_port = '1' then
+        out_port <= regfile_data_a;
+      else
+        out_port <= "ZZZZZZZZ";
+      end if;
       -----------------------------------------------------------------
       -- execute 2 / AKA writeback
       -----------------------------------------------------------------

@@ -33,7 +33,7 @@ architecture BHV of imem is
     "01000001", -- add r0, r1
     "01000001", -- add r0, r1
     "01001000", -- add r2, r0
-	"00000000", -- NOOP
+	"11000000", -- NOOP
 	"00000000", -- NOOP
 	"00000000", -- NOOP
 	"00000000", -- NOOP
