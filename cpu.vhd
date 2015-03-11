@@ -126,7 +126,7 @@ datapath: process(clk)
 -------------------------------------------------------------------
 -- fetch
 -------------------------------------------------------------------
-        pc <= std_ulogic_vector(unsigned(pc) + 1);
+        pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,7));
         decode_in_port   <= in_port;
 -----------------------------------------------------------------
 -- decode (type A)

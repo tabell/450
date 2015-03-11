@@ -50,10 +50,11 @@ begin
         case alu_mode is
           when "000" => res := std_ulogic_vector(signed(in_a) + signed(in_b));
           when "001" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
-          when "010" => res := in_a nand in_b;
-          when "011" => res := std_ulogic_vector(shift_right(signed(in_a),to_integer(unsigned(in_b))));
-          --when "100" => 
-          --  tmp := std_ulogic_vector(shift_left(signed(in_a),to_integer(unsigned(in_b(8 downto 0)))));
+          when "010" => res := std_ulogic_vector(shift_left(unsigned(in_a),1));
+          when "011" => res := std_ulogic_vector(shift_right(unsigned(in_a),1));
+          when "100" => res := in_a nand in_b;
+
+
           --  res := tmp(7 downto 0);
           when others => res := "00000000";
         end case;
