@@ -158,9 +158,13 @@ datapath: process(clk)
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= "00";
           exec0_in_port <= decode_in_port;
+          forwarding_a <= '0';
+          forwarding_b <= '0';
         when others =>
           exec0_alu_mode <= "ZZZ";
           exec0_reg_wr_en <= '0';
+          forwarding_a <= '0';
+          forwarding_b <= '0';
         end case;
 
         if decode_instr(7 downto 4) = "1100" then -- OUT (register to output port)
@@ -175,6 +179,8 @@ datapath: process(clk)
           exec0_reg_addr_w <= decode_instr(3 downto 2); -- destination register
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= "10";
+          forwarding_a <= '0';
+          forwarding_b <= '0';
         end if;
 
           
