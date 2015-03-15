@@ -91,16 +91,16 @@ BEGIN
       rst <= '1';
       wait for 100 ns;  -- first four instructions fill the registers
       rst <= '0';
-      in_port <= x"60";
+      in_port <= x"05";
       wait for clk_period;
-      in_port <= x"0c";
+      in_port <= x"0a";
       wait for clk_period;
-      in_port <= x"03";
+      in_port <= x"0f";
       wait for clk_period;
       --in_port <= "01000101";
       --wait for clk_period*3;
 
-      in_port <= x"02";
+      in_port <= x"14";
       -- insert stimulus here 
 
       wait;

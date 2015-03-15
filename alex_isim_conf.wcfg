@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="/home/alex/test/450/cpu_tb_isim_beh.wdb" id="1" type="auto">
+      <db_ref path="M:/450/450/cpu_tb_isim_beh.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="cpu_tb" />
             <top_module name="numeric_std" />
@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="34" />
+   <WVObjectSize size="24" />
    <wvobject fp_name="/cpu_tb/uut/pc" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">pc[6:0]</obj_property>
       <obj_property name="ObjectShortName">pc[6:0]</obj_property>
@@ -86,10 +86,6 @@
       <obj_property name="ElementShortName">exec1_reg_wr_en</obj_property>
       <obj_property name="ObjectShortName">exec1_reg_wr_en</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/exec0_alu_mode" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">exec0_alu_mode[2:0]</obj_property>
-      <obj_property name="ObjectShortName">exec0_alu_mode[2:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/alu_mode" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">alu_mode[2:0]</obj_property>
       <obj_property name="ObjectShortName">alu_mode[2:0]</obj_property>
@@ -109,14 +105,6 @@
       <obj_property name="ObjectShortName">alu_result[7:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/regfile_addr_a" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile_addr_a[1:0]</obj_property>
-      <obj_property name="ObjectShortName">regfile_addr_a[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/regfile_addr_b" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile_addr_b[1:0]</obj_property>
-      <obj_property name="ObjectShortName">regfile_addr_b[1:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile_data_a" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_data_a[7:0]</obj_property>
       <obj_property name="ObjectShortName">regfile_data_a[7:0]</obj_property>
@@ -127,18 +115,6 @@
       <obj_property name="ObjectShortName">regfile_data_b[7:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/regfile_addr_w" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile_addr_w[1:0]</obj_property>
-      <obj_property name="ObjectShortName">regfile_addr_w[1:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/exec0_forwarding_a" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">exec0_forwarding_a</obj_property>
-      <obj_property name="ObjectShortName">exec0_forwarding_a</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/exec0_forwarding_b" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">exec0_forwarding_b</obj_property>
-      <obj_property name="ObjectShortName">exec0_forwarding_b</obj_property>
-   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile_data_w" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_data_w[7:0]</obj_property>
       <obj_property name="ObjectShortName">regfile_data_w[7:0]</obj_property>
@@ -148,13 +124,13 @@
       <obj_property name="ElementShortName">regfile_wr_en</obj_property>
       <obj_property name="ObjectShortName">regfile_wr_en</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/exec0_reg_wr_src_mux" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">exec0_reg_wr_src_mux[1:0]</obj_property>
-      <obj_property name="ObjectShortName">exec0_reg_wr_src_mux[1:0]</obj_property>
+   <wvobject fp_name="/cpu_tb/uut/exec0_reg_wr_src_mux" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">exec0_reg_wr_src_mux</obj_property>
+      <obj_property name="ObjectShortName">exec0_reg_wr_src_mux</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/exec1_reg_wr_src_mux" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">exec1_reg_wr_src_mux[1:0]</obj_property>
-      <obj_property name="ObjectShortName">exec1_reg_wr_src_mux[1:0]</obj_property>
+   <wvobject fp_name="/cpu_tb/uut/exec1_reg_wr_src_mux" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">exec1_reg_wr_src_mux</obj_property>
+      <obj_property name="ObjectShortName">exec1_reg_wr_src_mux</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile/regfile" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile[0:3]</obj_property>
@@ -194,24 +170,5 @@
    <wvobject fp_name="/cpu_tb/uut/alu_in_b" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">alu_in_b[7:0]</obj_property>
       <obj_property name="ObjectShortName">alu_in_b[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/alu1/alu_mode" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">alu_mode[2:0]</obj_property>
-      <obj_property name="ObjectShortName">alu_mode[2:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/alu1/in_a" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">in_a[7:0]</obj_property>
-      <obj_property name="ObjectShortName">in_a[7:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/alu1/in_b" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">in_b[7:0]</obj_property>
-      <obj_property name="ObjectShortName">in_b[7:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/alu1/result" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">result[7:0]</obj_property>
-      <obj_property name="ObjectShortName">result[7:0]</obj_property>
-      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
 </wave_config>
