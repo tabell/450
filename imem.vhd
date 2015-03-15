@@ -17,11 +17,19 @@ architecture BHV of imem is
     type ROM_TYPE is array (0 to 127) of std_ulogic_vector (7 downto 0);
 
     constant rom_content : ROM_TYPE := (
+    x"b0",
+	x"b4",
+	x"b0",
+	x"b0",
+    x"41", -- add r0 <= r0 + r1
+    --x"4b", -- add r2 <= r2 + r3
+    --x"42", -- add r0 <= r0 + r2
 
-0 =>   x"b0", -- IN R0
-1 =>   x"b4", -- IN R1
-2 =>	x"bb", -- IN R2
-3 =>	x"64", -- SHL r1 0100
+
+--0 =>   x"b0", -- IN R0
+--1 =>   x"b4", -- IN R1
+--2 =>	x"bb", -- IN R2
+--3 =>	x"64", -- SHL r1 0100
 --4 =>	x"51", -- SUB r0, r1
 --5 =>	x"D6", -- MOV r1, r2
 --6 =>	x"49", -- ADD r2, r1

@@ -72,16 +72,20 @@ signal exec0_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 signal exec0_in_port : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec0_out_port : std_ulogic := '0';
 
+signal exec0_instr : std_ulogic_vector(7 downto 0) := (others => '0');
 
 signal exec1_reg_wr_src_mux : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
 signal exec1_in_data : std_ulogic_vector(7 downto 0) := (others => '0');
 signal exec1_reg_wr_en : std_ulogic := '0';
 signal exec1_reg_addr_w : std_ulogic_vector(1 downto 0) := (others => '0'); -- 
+signal exec1_alu_mode : std_ulogic_vector(2 downto 0) := (others => '0');
 
 signal exec1_mov_data : std_ulogic_vector(7 downto 0) := (others => '0'); -- 
 
-signal forwarding_a : std_ulogic := '0';
-signal forwarding_b : std_ulogic := '0';
+signal exec0_forwarding_a : std_ulogic := '0';
+signal exec0_forwarding_b : std_ulogic := '0';
+signal exec1_forwarding_a : std_ulogic := '0';
+signal exec1_forwarding_b : std_ulogic := '0';
 --------------------------------------------------------------------
 ------------------ REFACTORED ABOVE THIS LINE ----------------------
 --------------------------------------------------------------------
@@ -139,17 +143,17 @@ datapath: process(clk)
           exec0_alu_mode(1 downto 0) <= decode_instr(5 downto 4);
           exec0_reg_wr_en <= '1'; -- will be writing back to reg file
           if decode_instr(1 downto 0) = regfile_addr_w then
-            forwarding_b <= '1';
+            exec0_forwarding_b <= '1';
             regfile_addr_b   <= "ZZ";
           else
-            forwarding_b <= '0';
+            exec0_forwarding_b <= '0';
             regfile_addr_b   <= decode_instr(1 downto 0);
           end if;
           if decode_instr(3 downto 2) = regfile_addr_w then
-            forwarding_a <= '1';
+            exec0_forwarding_a <= '1';
             regfile_addr_a   <= "ZZ";
           else
-            forwarding_a <= '0';
+            exec0_forwarding_a <= '0';
             regfile_addr_a   <= decode_instr(3 downto 2);
           end if;
           exec0_reg_wr_src_mux <= "01"; 
@@ -158,13 +162,13 @@ datapath: process(clk)
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= "00";
           exec0_in_port <= decode_in_port;
-          forwarding_a <= '0';
-          forwarding_b <= '0';
+          exec0_forwarding_a <= '0';
+          exec0_forwarding_b <= '0';
         when others =>
           exec0_alu_mode <= "ZZZ";
           exec0_reg_wr_en <= '0';
-          forwarding_a <= '0';
-          forwarding_b <= '0';
+          exec0_forwarding_a <= '0';
+          exec0_forwarding_b <= '0';
         end case;
 
         if decode_instr(7 downto 4) = "1100" then -- OUT (register to output port)
@@ -179,16 +183,21 @@ datapath: process(clk)
           exec0_reg_addr_w <= decode_instr(3 downto 2); -- destination register
           exec0_reg_wr_en <= '1';
           exec0_reg_wr_src_mux <= "10";
-          forwarding_a <= '0';
-          forwarding_b <= '0';
+          exec0_forwarding_a <= '0';
+          exec0_forwarding_b <= '0';
         end if;
 
           
+
         if exec0_reg_wr_en = '0' then
-          forwarding_a <= '0';
-          forwarding_b <= '0';
+          exec0_forwarding_a <= '0';
+          exec0_forwarding_b <= '0';
         end if;
 
+        exec1_forwarding_a <= exec0_forwarding_a;
+        exec1_forwarding_b <= exec0_forwarding_b;
+
+        exec0_instr <= decode_instr;
 
         exec0_reg_addr_w   <= decode_instr(3 downto 2);
       -----------------------------------------------------------------
@@ -196,14 +205,15 @@ datapath: process(clk)
       -----------------------------------------------------------------
         exec1_reg_wr_src_mux <= exec0_reg_wr_src_mux;
       -- TYPE A INSTRUCTION
-        alu_mode        <= exec0_alu_mode;
+        alu_mode        <= exec1_alu_mode;
+        exec1_alu_mode        <= exec0_alu_mode;
         alu_in_a        <= regfile_data_a;
-        if forwarding_b = '1' then
+        if exec1_forwarding_b = '1' then
           alu_in_b        <= alu_result;
         else
           alu_in_b        <= regfile_data_b;
         end if;
-        if forwarding_a = '1' then
+        if exec1_forwarding_a = '1' then
           alu_in_a        <= alu_result;
         else
           alu_in_a        <= regfile_data_a;
