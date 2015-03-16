@@ -43,10 +43,11 @@ end alu;
 
 architecture Behavioral of alu is
 begin
-  process (in_a,in_b,alu_mode)
+  process (clk)
   variable res : std_ulogic_vector(7 downto 0);
   variable tmp : std_ulogic_vector(23 downto 0);
   begin
+  if rising_edge(clk) then
         case alu_mode is
           when "000" => res := std_ulogic_vector(signed(in_a) + signed(in_b));
           when "001" => res := std_ulogic_vector(signed(in_a) - signed(in_b));
@@ -69,6 +70,7 @@ begin
           z <= '0';
         end if; -- end if zero
       result <= res;
+      end if;
   end process;
 end Behavioral;
 
