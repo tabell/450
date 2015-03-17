@@ -24,13 +24,14 @@ architecture BHV of imem is
     x"00", -- NOOP
     x"00", -- NOOP
     x"00", -- NOOP
+    x"00", -- NOOP
     x"41", -- add r0, r1
-    x"41", -- add r0, r1
-    x"41", -- add r0, r1
-    x"41", -- add r0, r1
-    x"41", -- add r0, r1
-    x"41", -- add r0, r1
-    x"41", -- add r0, r1
+    --x"41", -- add r0, r1
+    --x"41", -- add r0, r1
+    --x"41", -- add r0, r1
+    --x"41", -- add r0, r1
+    --x"41", -- add r0, r1
+    --x"41", -- add r0, r1
     --x"48", -- add r2, r0
     --x"4b", -- add r2 <= r2 + r3
     --x"42", -- add r0 <= r0 + r2

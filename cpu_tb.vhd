@@ -99,6 +99,7 @@ BEGIN
       wait for clk_period;
       in_port <= x"07";
       wait for clk_period;
+      in_port <= "ZZZZZZZZ";
       wait;
    end process;
 
