@@ -44,20 +44,21 @@ signal fd_in_port_data      : std_ulogic_vector(7 downto 0) := (others => 'Z');
 -- decode/execute registers
 signal de_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
 signal de_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal de_reg_write_en       : std_ulogic := 'Z';
+signal de_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
+signal de_reg_write_en       : std_ulogic := '0';
 signal de_alu_mode           : std_ulogic_vector(2 downto 0) := (others => 'Z');
 
 -- execute/memory registers
 signal em_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal em_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
 signal em_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal em_reg_write_en       : std_ulogic := 'Z';
+signal em_reg_write_en       : std_ulogic := '0';
 
 -- memory/writeback registers
 signal mw_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal mw_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
 signal mw_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
 signal mw_reg_write_en       : std_ulogic := '0';
-
-
 
 begin
 
@@ -88,17 +89,19 @@ begin
                     regfile_addr_a <= fd_instr(3 downto 2);
                     regfile_addr_b <= fd_instr(1 downto 0);
                     de_reg_write_en <= '1';
+                    de_reg_write_addr <= fd_instr(3 downto 2);
                     -- alu mode
                     de_alu_mode(2)          <= fd_instr(7);
                     de_alu_mode(1 downto 0) <= fd_instr(5 downto 4);
                 when "1011" => -- IN (read from input port)
                     de_reg_write_data <= fd_in_port_data;
+                    de_reg_write_addr <= fd_instr(3 downto 2);
                     de_reg_write_en <= '1';
 
                     -- other instructions
                     de_alu_mode <= "ZZZ";
                 when others =>
-                    de_reg_write_data <= "ZZZZZZZZ";
+                    de_reg_write_data <= "11111111";
                     de_alu_mode <= "ZZZ";
                     de_reg_write_en <= '0';
                 end case;
@@ -117,7 +120,7 @@ begin
 -- writeback stage
                 regfile_data_w <= mw_reg_write_data;
                 regfile_addr_w <= mw_instr(3 downto 2);
-                regfile_wr_en <= mw_reg_write_en;
+                regfile_wr_en <= em_reg_write_en;
             end if;
         end if;
     end process;
