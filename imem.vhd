@@ -23,6 +23,22 @@ architecture BHV of imem is
     x"bc", -- IN r3, xx
     x"00", -- NOOP
     x"00", -- NOOP
+    x"d3", -- MOV R0 <= R3
+    x"00", -- NOOP
+    x"00", -- NOOP
+    x"30", -- LOAD IMMEDIATE r0
+    x"20", -- Load 20 into r0
+    x"00", -- NOOP
+    x"00", -- NOOP
+    x"00", -- NOOP
+    x"41", -- add r0, r1
+    x"00", -- NOOP
+    x"00", -- NOOP
+    x"00", -- NOOP
+    x"00", -- NOOP
+    x"c8", -- OUT r0
+    x"00", -- NOOP
+    x"00", -- NOOP
     x"00", -- NOOP
     x"00", -- NOOP
     x"41", -- add r0, r1

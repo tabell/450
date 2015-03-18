@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="M:/450/450/cpu_tb_isim_beh.wdb" id="1" type="auto">
+      <db_ref path="/home/alex/test/450/cpu_tb_isim_beh.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="cpu_tb" />
             <top_module name="numeric_std" />
@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="40" />
+   <WVObjectSize size="44" />
    <wvobject fp_name="/cpu_tb/rst" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">rst</obj_property>
       <obj_property name="ObjectShortName">rst</obj_property>
@@ -61,10 +61,31 @@
       <obj_property name="CustomSignalColor">#800080</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
    </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/em_reg_data_in_sel" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">em_reg_data_in_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">em_reg_data_in_sel[3:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile/regfile" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile[0:3]</obj_property>
       <obj_property name="ObjectShortName">regfile[0:3]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/regfile_addr_w" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile_addr_w[1:0]</obj_property>
+      <obj_property name="ObjectShortName">regfile_addr_w[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/regfile_data_w" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile_data_w[7:0]</obj_property>
+      <obj_property name="ObjectShortName">regfile_data_w[7:0]</obj_property>
+      <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#800080</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/regfile_wr_en" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile_wr_en</obj_property>
+      <obj_property name="ObjectShortName">regfile_wr_en</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/alu_mode" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">alu_mode[2:0]</obj_property>
@@ -110,6 +131,10 @@
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#ffff00</obj_property>
    </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/out_flag" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">out_flag</obj_property>
+      <obj_property name="ObjectShortName">out_flag</obj_property>
+   </wvobject>
    <wvobject fp_name="divider33" type="divider">
       <obj_property name="label">Fetch</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -120,6 +145,8 @@
       <obj_property name="ElementShortName">rom_out[7:0]</obj_property>
       <obj_property name="ObjectShortName">rom_out[7:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffff00</obj_property>
    </wvobject>
    <wvobject fp_name="divider28" type="divider">
       <obj_property name="label">Decode</obj_property>
@@ -221,9 +248,5 @@
    <wvobject fp_name="/cpu_tb/uut/regfile_wr_en" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_wr_en</obj_property>
       <obj_property name="ObjectShortName">regfile_wr_en</obj_property>
-   </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/reg_data_in_sel" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">reg_data_in_sel[3:0]</obj_property>
-      <obj_property name="ObjectShortName">reg_data_in_sel[3:0]</obj_property>
    </wvobject>
 </wave_config>
