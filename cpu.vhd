@@ -38,38 +38,42 @@ signal rom_out          : std_ulogic_vector(7 downto 0) := (others => 'Z');
 signal in_port_data   : std_ulogic_vector(7 downto 0) := (others => 'Z');
 
 -- architectural signals
--- fetch/decode registers
-signal fd_instr             : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal fd_in_port_data      : std_ulogic_vector(7 downto 0) := (others => 'Z');
+-- issue/decode registers
+signal is_dec_instr             : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal is_dec_in_port_data      : std_ulogic_vector(7 downto 0) := (others => 'Z');
 
 -- decode/execute registers
-signal de_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal de_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal de_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
-signal de_regfile_addr_a     : std_ulogic_vector(1 downto 0) := (others => 'Z');
+signal de_ex_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal de_ex_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal de_ex_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
+signal de_ex_regfile_addr_a     : std_ulogic_vector(1 downto 0) := (others => 'Z');
 
-signal de_reg_write_en       : std_ulogic := '0';
-signal de_alu_mode           : std_ulogic_vector(2 downto 0) := (others => 'Z');
+signal de_ex_reg_write_en       : std_ulogic := '0';
+signal de_ex_alu_mode           : std_ulogic_vector(2 downto 0) := (others => 'Z');
 -- decode/exec control signals
-signal de_reg_data_in_sel              : std_ulogic_vector(3 downto 0) := (others => '0');
-signal de_out_flag            : std_ulogic := '0';
-signal de_load_imm            : std_ulogic := '0';
-signal de_load_addr            : std_ulogic_vector(1 downto 0) := (others => '0');
+signal de_ex_reg_data_in_sel              : std_ulogic_vector(3 downto 0) := (others => '0');
+signal de_ex_out_flag            : std_ulogic := '0';
+-- decode/exec load immediate
+signal de_ex_load_imm            : std_ulogic := '0';
+signal de_ex_load_addr            : std_ulogic_vector(1 downto 0) := (others => '0');
+
+-- decode/exec branching
+signal de_ex_branch            : std_ulogic := '0';
 
 -- execute/memory registers
-signal em_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal em_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
-signal em_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
-signal em_reg_write_en       : std_ulogic := '0';
+signal ex_mem_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal ex_mem_reg_write_addr     : std_ulogic_vector(1 downto 0) := (others => 'Z');
+signal ex_mem_reg_write_data     : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal ex_mem_reg_write_en       : std_ulogic := '0';
 -- exec/mem control signals
-signal em_reg_data_in_sel              : std_ulogic_vector(3 downto 0) := (others => '0');
-signal em_out_flag            : std_ulogic := '0';
+signal ex_mem_reg_data_in_sel              : std_ulogic_vector(3 downto 0) := (others => '0');
+signal ex_mem_out_flag            : std_ulogic := '0';
 
 -- memory/writeback registers
-signal mw_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal mem_wb_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
 
 -- control signals
-signal fetch_stalled       : std_ulogic := '0';
+signal issue_stalled       : std_ulogic := '0';
 signal decode_stalled       : std_ulogic := '0';
 signal execute_stalled       : std_ulogic := '0';
 signal memory_stalled       : std_ulogic := '0';
@@ -94,16 +98,16 @@ begin
             if rst = '1' then
                 pc <= "0000000";
             else
--- fetch stage
-                if fetch_stalled = '0' 
+-- issue stage
+                if issue_stalled = '0' 
                 and decode_stalled = '0' 
                 and execute_stalled ='0' 
                 and memory_stalled = '0' 
                 and writeback_stalled = '0' then
                     in_port_data <= in_port;
                     pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,7));
-                    fd_instr <= rom_out; -- instruction register
-                    fd_in_port_data <= in_port_data;
+                    is_dec_instr <= rom_out; -- instruction register
+                    is_dec_in_port_data <= in_port_data;
                     regfile_addr_a <= rom_out(3 downto 2);
                     regfile_addr_b <= rom_out(1 downto 0);
                 end if;
@@ -112,61 +116,64 @@ begin
                 and execute_stalled ='0' 
                 and memory_stalled = '0' 
                 and writeback_stalled = '0' then
-                    de_instr <= fd_instr; -- instruction register
-                    de_alu_mode <= "XXX";
-                    de_reg_write_en <= '0';
-                    de_reg_write_addr <= "XX";
+                    de_ex_instr <= is_dec_instr; -- instruction register
+                    de_ex_alu_mode <= "XXX";
+                    de_ex_reg_write_en <= '0';
+                    de_ex_reg_write_addr <= "XX";
                     alu_in_a <= "XXXXXXXX";
                     alu_in_b <= "XXXXXXXX";
-                    de_reg_data_in_sel <= "XXXX"; -- register data will  be written from alu result
-                    de_out_flag <= '0';
+                    de_ex_reg_data_in_sel <= "XXXX"; -- register data will  be written from alu result
+                    de_ex_out_flag <= '0';
 
-                    if de_load_imm = '1' then -- this is an immediate value, not an instruction
-                        de_load_imm <= '0';
-                        de_reg_write_data <= fd_instr;
-                        de_reg_write_addr <= de_load_addr;
-                        de_reg_write_en <= '1';
-                        de_reg_data_in_sel <= x"1"; -- register data will  be written from in port
+                    if de_ex_load_imm = '1' then -- this is an immediate value, not an instruction
+                        de_ex_load_imm <= '0';
+                        de_ex_reg_write_data <= is_dec_instr;
+                        de_ex_reg_write_addr <= de_ex_load_addr;
+                        de_ex_reg_write_en <= '1';
+                        de_ex_reg_data_in_sel <= x"1"; -- register data will  be written from in port
 
                     else
 
-                        case fd_instr(7 downto 4) is -- opcode
+                        case is_dec_instr(7 downto 4) is -- opcode
                         when x"3" => -- LOADIMM (2 byte instruction)
-                            de_load_imm <= '1';
-                            de_load_addr <= fd_instr(3 downto 2);
+                            de_ex_load_imm <= '1';
+                            de_ex_load_addr <= is_dec_instr(3 downto 2);
 
                          ----- ADD ----- SUB --- NAND --- SHR ---- SHL ----------
                         --when "0100" | "0101" | "0110" | "0111" | "1000" => -- any ALU operation
                         when x"4" | x"5" | x"6" | x"7" | x"8" => -- any ALU operation
-                            de_reg_write_en <= '1';
-                            de_reg_write_addr <= fd_instr(3 downto 2);
-                            alu_mode <= fd_instr(7) & fd_instr(5 downto 4);
+                            de_ex_reg_write_en <= '1';
+                            de_ex_reg_write_addr <= is_dec_instr(3 downto 2);
+                            alu_mode <= is_dec_instr(7) & is_dec_instr(5 downto 4);
                             alu_in_a <= regfile_data_a;
                             alu_in_b <= regfile_data_b;
-                            regfile_addr_a <= fd_instr(3 downto 2);
-                            regfile_addr_b <= fd_instr(1 downto 0);
-                            de_reg_data_in_sel <= x"0"; -- register data will  be written from alu result
+                            regfile_addr_a <= is_dec_instr(3 downto 2);
+                            regfile_addr_b <= is_dec_instr(1 downto 0);
+                            de_ex_reg_data_in_sel <= x"0"; -- register data will  be written from alu result
+
+                        when x"9" => -- BRANCH
+                            regfile_addr_b <= is_dec_instr(1 downto 0);
 
                         when x"b" => -- IN (read from input port)
-                            de_reg_write_data <= fd_in_port_data;
-                            de_reg_write_addr <= fd_instr(3 downto 2);
-                            de_reg_write_en <= '1';
-                            de_reg_data_in_sel <= x"1"; -- register data will  be written from in port
+                            de_ex_reg_write_data <= is_dec_in_port_data;
+                            de_ex_reg_write_addr <= is_dec_instr(3 downto 2);
+                            de_ex_reg_write_en <= '1';
+                            de_ex_reg_data_in_sel <= x"1"; -- register data will  be written from in port
 
                         when x"c" => -- OUT
-                            de_regfile_addr_a <= fd_instr(3 downto 2);
-                            de_out_flag <= '1';
+                            de_ex_regfile_addr_a <= is_dec_instr(3 downto 2);
+                            de_ex_out_flag <= '1';
 
                         when x"d" => -- MOV
-                            de_reg_write_addr <= fd_instr(3 downto 2);
-                            de_reg_write_en <= '1';
-                            de_reg_data_in_sel <= x"2"; -- register data will be written from register file out
-                            de_regfile_addr_a <= fd_instr(1 downto 0);
+                            de_ex_reg_write_addr <= is_dec_instr(3 downto 2);
+                            de_ex_reg_write_en <= '1';
+                            de_ex_reg_data_in_sel <= x"2"; -- register data will be written from register file out
+                            de_ex_regfile_addr_a <= is_dec_instr(1 downto 0);
 
                         when others =>
-                            de_reg_write_data <= "XXXXXXXX";
+                            de_ex_reg_write_data <= "XXXXXXXX";
                             alu_mode <= "XXX";
-                            de_reg_write_en <= '0';
+                            de_ex_reg_write_en <= '0';
                         end case;
                     end if;
                 end if;
@@ -174,15 +181,15 @@ begin
                 if execute_stalled ='0' 
                 and memory_stalled = '0' 
                 and writeback_stalled = '0' then
-                    em_out_flag <= '0';
-                    em_instr <= de_instr; -- instruction register
-                    em_reg_write_data <= de_reg_write_data;
-                    em_reg_write_addr <= de_reg_write_addr;
-                    em_reg_write_en <= de_reg_write_en;
-                    em_reg_data_in_sel <= de_reg_data_in_sel;
-                    if de_out_flag = '1' then
-                        regfile_addr_a <= de_regfile_addr_a;
-                        em_out_flag <= '1';
+                    ex_mem_out_flag <= '0';
+                    ex_mem_instr <= de_ex_instr; -- instruction register
+                    ex_mem_reg_write_data <= de_ex_reg_write_data;
+                    ex_mem_reg_write_addr <= de_ex_reg_write_addr;
+                    ex_mem_reg_write_en <= de_ex_reg_write_en;
+                    ex_mem_reg_data_in_sel <= de_ex_reg_data_in_sel;
+                    if de_ex_out_flag = '1' then
+                        regfile_addr_a <= de_ex_regfile_addr_a;
+                        ex_mem_out_flag <= '1';
                     end if;
 
                 end if; -- not stalled
@@ -190,20 +197,20 @@ begin
 -- memory stage
                 if memory_stalled = '0' 
                 and writeback_stalled = '0' then
-                    mw_instr <= em_instr; -- instruction register
-                    regfile_wr_en <= em_reg_write_en;
-                    case em_reg_data_in_sel is
+                    mem_wb_instr <= ex_mem_instr; -- instruction register
+                    regfile_wr_en <= ex_mem_reg_write_en;
+                    case ex_mem_reg_data_in_sel is
                     when x"0" =>
                         regfile_data_w <= alu_result;
                     when x"1" =>
-                        regfile_data_w <= em_reg_write_data;
+                        regfile_data_w <= ex_mem_reg_write_data;
                     when x"2" =>
                         regfile_data_w <= regfile_data_a;
                     when others =>
                         regfile_data_w <= alu_result;
                     end case;
-                    regfile_addr_w <= em_reg_write_addr;
-                    if em_out_flag = '1' then
+                    regfile_addr_w <= ex_mem_reg_write_addr;
+                    if ex_mem_out_flag = '1' then
                         out_port <= regfile_data_a;
                     end if;
                 end if; -- not stalled
