@@ -79,6 +79,10 @@ signal execute_stalled       : std_ulogic := '0';
 signal memory_stalled       : std_ulogic := '0';
 signal writeback_stalled       : std_ulogic := '0';
 
+signal branch_pending       : std_ulogic := '0';
+
+signal is_dec_alu_z : std_ulogic := '0';
+signal is_dec_alu_n : std_ulogic := '0';
 
 
 begin
@@ -99,15 +103,25 @@ begin
                 pc <= "0000000";
             else
 -- issue stage
+                if rom_out(7 downto 2) = "100100" then
+                    issue_stalled <= '1';
+                end if;
                 if issue_stalled = '0' 
                 and decode_stalled = '0' 
                 and execute_stalled ='0' 
                 and memory_stalled = '0' 
                 and writeback_stalled = '0' then
                     in_port_data <= in_port;
-                    pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,7));
+                    if branch_pending = '0' then
+                        pc <= std_ulogic_vector(unsigned(pc) + to_unsigned(1,7));
+                    else
+                        pc <= regfile_data_a(6 downto 0);
+                        branch_pending <= '0';
+                    end if;
                     is_dec_instr <= rom_out; -- instruction register
                     is_dec_in_port_data <= in_port_data;
+                    is_dec_alu_z <= alu_z;
+                    is_dec_alu_n <= alu_n;
                     regfile_addr_a <= rom_out(3 downto 2);
                     regfile_addr_b <= rom_out(1 downto 0);
                 end if;
@@ -152,7 +166,13 @@ begin
                             de_ex_reg_data_in_sel <= x"0"; -- register data will  be written from alu result
 
                         when x"9" => -- BRANCH
-                            regfile_addr_b <= is_dec_instr(1 downto 0);
+                            if is_dec_instr(3 downto 2) = "00" or 
+                            (is_dec_instr(3 downto 2) = "01" and is_dec_alu_z = '1') or
+                            (is_dec_instr(3 downto 2) = "10" and is_dec_alu_n = '1') then
+                                issue_stalled <= '0';
+                                regfile_addr_a <= is_dec_instr(1 downto 0);
+                                branch_pending <= '1';
+                            end if;
 
                         when x"b" => -- IN (read from input port)
                             de_ex_reg_write_data <= is_dec_in_port_data;
