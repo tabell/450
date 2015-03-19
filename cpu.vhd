@@ -53,6 +53,8 @@ signal de_alu_mode           : std_ulogic_vector(2 downto 0) := (others => 'Z');
 -- decode/exec control signals
 signal de_reg_data_in_sel              : std_ulogic_vector(3 downto 0) := (others => '0');
 signal de_out_flag            : std_ulogic := '0';
+signal de_load_imm            : std_ulogic := '0';
+signal de_load_addr            : std_ulogic_vector(1 downto 0) := (others => '0');
 
 -- execute/memory registers
 signal em_instr              : std_ulogic_vector(7 downto 0) := (others => 'Z');
@@ -118,53 +120,70 @@ begin
                     alu_in_b <= "XXXXXXXX";
                     de_reg_data_in_sel <= "XXXX"; -- register data will  be written from alu result
                     de_out_flag <= '0';
-                    case fd_instr(7 downto 4) is -- opcode
-                     ----- ADD ----- SUB --- NAND --- SHR ---- SHL ----------
-                    --when "0100" | "0101" | "0110" | "0111" | "1000" => -- any ALU operation
-                    when x"4" | x"5" | x"6" | x"7" | x"8" => -- any ALU operation
-                        de_reg_write_en <= '1';
-                        de_reg_write_addr <= fd_instr(3 downto 2);
-                        -- alu mode
-                        --alu_mode(2)          <= fd_instr(7);
-                        --alu_mode(1 downto 0) <= fd_instr(5 downto 4);
-                        alu_mode <= fd_instr(7) & fd_instr(5 downto 4);
-                        regfile_addr_a <= fd_instr(3 downto 2);
-                        regfile_addr_b <= fd_instr(1 downto 0);
-                        alu_in_a <= regfile_data_a;
-                        alu_in_b <= regfile_data_b;
-                        de_reg_data_in_sel <= x"0"; -- register data will  be written from alu result
-                    when x"b" => -- IN (read from input port)
-                        de_reg_write_data <= fd_in_port_data;
-                        de_reg_write_addr <= fd_instr(3 downto 2);
+
+                    if de_load_imm = '1' then -- this is an immediate value, not an instruction
+                        de_load_imm <= '0';
+                        de_reg_write_data <= fd_instr;
+                        de_reg_write_addr <= de_load_addr;
                         de_reg_write_en <= '1';
                         de_reg_data_in_sel <= x"1"; -- register data will  be written from in port
 
-                    when x"d" => -- MOV
-                        de_reg_write_addr <= fd_instr(3 downto 2);
-                        de_reg_write_en <= '1';
-                        de_reg_data_in_sel <= x"2"; -- register data will be written from register file out
-                        de_regfile_addr_a <= fd_instr(1 downto 0);
+                    else
 
-                    when x"c" => -- OUT
-                        de_regfile_addr_a <= fd_instr(3 downto 2);
-                        de_out_flag <= '1';
-                    when others =>
-                        de_reg_write_data <= "XXXXXXXX";
-                        alu_mode <= "XXX";
-                        de_reg_write_en <= '0';
-                    end case;
+                        case fd_instr(7 downto 4) is -- opcode
+                        when x"3" => -- LOADIMM (2 byte instruction)
+                            de_load_imm <= '1';
+                            de_load_addr <= fd_instr(3 downto 2);
+
+                         ----- ADD ----- SUB --- NAND --- SHR ---- SHL ----------
+                        --when "0100" | "0101" | "0110" | "0111" | "1000" => -- any ALU operation
+                        when x"4" | x"5" | x"6" | x"7" | x"8" => -- any ALU operation
+                            de_reg_write_en <= '1';
+                            de_reg_write_addr <= fd_instr(3 downto 2);
+                            alu_mode <= fd_instr(7) & fd_instr(5 downto 4);
+                            alu_in_a <= regfile_data_a;
+                            alu_in_b <= regfile_data_b;
+                            regfile_addr_a <= fd_instr(3 downto 2);
+                            regfile_addr_b <= fd_instr(1 downto 0);
+                            de_reg_data_in_sel <= x"0"; -- register data will  be written from alu result
+
+                        when x"b" => -- IN (read from input port)
+                            de_reg_write_data <= fd_in_port_data;
+                            de_reg_write_addr <= fd_instr(3 downto 2);
+                            de_reg_write_en <= '1';
+                            de_reg_data_in_sel <= x"1"; -- register data will  be written from in port
+
+                        when x"c" => -- OUT
+                            de_regfile_addr_a <= fd_instr(3 downto 2);
+                            de_out_flag <= '1';
+
+                        when x"d" => -- MOV
+                            de_reg_write_addr <= fd_instr(3 downto 2);
+                            de_reg_write_en <= '1';
+                            de_reg_data_in_sel <= x"2"; -- register data will be written from register file out
+                            de_regfile_addr_a <= fd_instr(1 downto 0);
+
+                        when others =>
+                            de_reg_write_data <= "XXXXXXXX";
+                            alu_mode <= "XXX";
+                            de_reg_write_en <= '0';
+                        end case;
+                    end if;
                 end if;
 -- execute stage
                 if execute_stalled ='0' 
                 and memory_stalled = '0' 
                 and writeback_stalled = '0' then
+                    em_out_flag <= '0';
                     em_instr <= de_instr; -- instruction register
                     em_reg_write_data <= de_reg_write_data;
                     em_reg_write_addr <= de_reg_write_addr;
                     em_reg_write_en <= de_reg_write_en;
                     em_reg_data_in_sel <= de_reg_data_in_sel;
-                    regfile_addr_a <= de_regfile_addr_a;
-                    em_out_flag <= de_out_flag;
+                    if de_out_flag = '1' then
+                        regfile_addr_a <= de_regfile_addr_a;
+                        em_out_flag <= '1';
+                    end if;
 
                 end if; -- not stalled
 
@@ -174,10 +193,10 @@ begin
                     mw_instr <= em_instr; -- instruction register
                     regfile_wr_en <= em_reg_write_en;
                     case em_reg_data_in_sel is
-                    when x"1" =>
-                        regfile_data_w <= em_reg_write_data;
                     when x"0" =>
                         regfile_data_w <= alu_result;
+                    when x"1" =>
+                        regfile_data_w <= em_reg_write_data;
                     when x"2" =>
                         regfile_data_w <= regfile_data_a;
                     when others =>
