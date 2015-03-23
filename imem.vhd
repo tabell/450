@@ -19,7 +19,7 @@ architecture BHV of imem is
     constant rom_content : ROM_TYPE := (
     
     x"30", -- LOAD IMMEDIATE r0
-    x"10", -- imm value 64
+    x"03", -- imm value 64
     x"34", -- LOAD IMMEDIATE r1
     x"FF", -- imm value -1
     x"38", -- LOAD IMMEDIATE r2
@@ -31,7 +31,7 @@ architecture BHV of imem is
     x"41", -- add r0, r1 # loop
     x"00", -- NOP
     x"00", -- NOP
-    x"9b", -- branch on negative to r2 [contains address of exit]
+    x"9a", -- branch on negative to r2 [contains address of exit]
     x"00", -- NOP
     x"00", -- NOP
     x"93", -- branch to r3 [contains address of loop]

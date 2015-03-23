@@ -103,7 +103,7 @@ begin
                 pc <= "0000000";
             else
 -- issue stage
-                if rom_out(7 downto 2) = "100100" then
+                if rom_out(7 downto 4) = "1001" then
                     issue_stalled <= '1';
                 end if;
                 if issue_stalled = '0' 
@@ -166,10 +166,10 @@ begin
                             de_ex_reg_data_in_sel <= x"0"; -- register data will  be written from alu result
 
                         when x"9" => -- BRANCH
+                            issue_stalled <= '0';
                             if is_dec_instr(3 downto 2) = "00" or 
                             (is_dec_instr(3 downto 2) = "01" and is_dec_alu_z = '1') or
                             (is_dec_instr(3 downto 2) = "10" and is_dec_alu_n = '1') then
-                                issue_stalled <= '0';
                                 regfile_addr_a <= is_dec_instr(1 downto 0);
                                 branch_pending <= '1';
                             end if;

@@ -3,7 +3,7 @@
    <wave_state>
    </wave_state>
    <db_ref_list>
-      <db_ref path="/home/alex/test/450/cpu_tb_isim_beh1.wdb" id="1" type="auto">
+      <db_ref path="/home/alex/test/450/cpu_tb_isim_beh.wdb" id="1" type="auto">
          <top_modules>
             <top_module name="cpu_tb" />
             <top_module name="numeric_std" />
@@ -12,7 +12,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="44" />
+   <WVObjectSize size="47" />
    <wvobject fp_name="/cpu_tb/rst" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">rst</obj_property>
       <obj_property name="ObjectShortName">rst</obj_property>
@@ -35,17 +35,17 @@
       <obj_property name="ObjectShortName">regfile_addr_a[1:0]</obj_property>
       <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
-   <wvobject fp_name="/cpu_tb/uut/regfile_addr_b" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">regfile_addr_b[1:0]</obj_property>
-      <obj_property name="ObjectShortName">regfile_addr_b[1:0]</obj_property>
-      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
-   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile_data_a" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_data_a[7:0]</obj_property>
       <obj_property name="ObjectShortName">regfile_data_a[7:0]</obj_property>
       <obj_property name="Radix">SIGNEDDECRADIX</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#800080</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/regfile_addr_b" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">regfile_addr_b[1:0]</obj_property>
+      <obj_property name="ObjectShortName">regfile_addr_b[1:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/regfile_data_b" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">regfile_data_b[7:0]</obj_property>
@@ -136,6 +136,10 @@
       <obj_property name="ElementShortName">alu_n</obj_property>
       <obj_property name="ObjectShortName">alu_n</obj_property>
    </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/branch_pending" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">branch_pending</obj_property>
+      <obj_property name="ObjectShortName">branch_pending</obj_property>
+   </wvobject>
    <wvobject fp_name="/cpu_tb/uut/alu_z" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">alu_z</obj_property>
       <obj_property name="ObjectShortName">alu_z</obj_property>
@@ -178,6 +182,15 @@
       <obj_property name="ElementShortName">is_dec_instr[7:0]</obj_property>
       <obj_property name="ObjectShortName">is_dec_instr[7:0]</obj_property>
       <obj_property name="Radix">HEXRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/is_dec_alu_n" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">is_dec_alu_n</obj_property>
+      <obj_property name="ObjectShortName">is_dec_alu_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/cpu_tb/uut/is_dec_instr" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">is_dec_instr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">is_dec_instr[7:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
    <wvobject fp_name="/cpu_tb/uut/is_dec_in_port_data" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">is_dec_in_port_data[7:0]</obj_property>
