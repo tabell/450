@@ -15,6 +15,13 @@ end cpu;
 architecture Behavioral of cpu is
 -- signals for components
 
+-- ram signals
+signal ram_addr_r : std_ulogic_vector(6 downto 0) := (others => 'Z');
+signal ram_data_r : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal ram_addr_w : std_ulogic_vector(6 downto 0) := (others => 'Z');
+signal ram_data_w : std_ulogic_vector(7 downto 0) := (others => 'Z');
+signal ram_wr_en  : std_ulogic := '0';
+
 -- regfile signals
 signal regfile_addr_a : std_ulogic_vector(1 downto 0) := (others => 'Z');
 signal regfile_addr_b : std_ulogic_vector(1 downto 0) := (others => 'Z');
@@ -93,6 +100,8 @@ begin
      regfile_data_a, regfile_data_b, 
      regfile_addr_w, regfile_data_w, 
      regfile_wr_en);
+    fakeram : entity work.fake_ram port map(clk, rst, ram_addr_r, ram_data_r, 
+        ram_addr_w, ram_data_w, ram_wr_en);
     alu1 : entity work.alu port map(clk, rst, alu_mode, alu_in_a, alu_in_b, alu_result, alu_n, alu_z);
 
     cpu: process(clk)

@@ -51,10 +51,9 @@ begin
 	begin
 		if rising_edge(clk) then
 			if (rst = '1') then
-				regfile(0) <= "00000000";
-				regfile(1) <= "00000000";
-				regfile(2) <= "00000000";
-				regfile(3) <= "00000000";		
+				for I in 0 to 3 loop
+					regfile(I) <= "00000000";
+				end loop;
 			else
 				if (wr_en = '1') then
 					regfile(to_integer(unsigned(wr_index))) <= wr_data;
