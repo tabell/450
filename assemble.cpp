@@ -13,7 +13,7 @@
 #include <iterator> //for std::istream_iterator
 #include <vector>   //for std::vector
 #include <queue>
-#include <algorithm>
+#include <algorithm> // for std::remove
 #include <bitset>
 
 using std::cout;
@@ -50,6 +50,8 @@ using std::vector;
 #define REG_R2 2
 #define REG_R3 3
 
+#define DEBUG_EN
+
 bool is_file_exist(const char *fileName)
 {
 	std::ifstream infile(fileName);
@@ -60,6 +62,7 @@ bool is_file_exist(const char *fileName)
 int main(int argc, char** argv)
 {
 	unsigned char result[128];
+	int instruction_counter = 0;
 	for (int i=0;i<128;i++) result[i]=0;
 		vector<string> pre, post;
 	std::queue<string> data;
@@ -90,16 +93,29 @@ int main(int argc, char** argv)
 		int j=-1;
 		while(std::getline(file, line))
 		{
+			if (j == 127)
+			{
+#ifdef DEBUG_EN
+				cout << "instruction count exceeds data mem size" << endl;
+#endif
+				break;
+			}
+#ifdef DEBUG_EN
+			cout << "pushing to data: " << line << endl;
+#endif
 			data.push(line); // save the data before cleaning
+			instruction_counter++;
 
 			// clean the data to match case and remove punctuation
 			char chars[] = ".,";
 			for (unsigned int i = 0; i < strlen(chars); ++i)
 			{
-	      // you need include <algorithm> to use general algorithms like std::remove()
 				line.erase (std::remove(line.begin(), line.end(), chars[i]), line.end());
 			}
 			std::transform(line.begin(), line.end(), line.begin(), ::tolower);
+#ifdef DEBUG_EN
+			cout << line << endl;
+#endif
 			j++;
 
 		// cout << line << endl;
@@ -110,11 +126,11 @@ int main(int argc, char** argv)
 			vector<string> vec(begin, end);
 			if (vec.size() >= 1)
 			{
-				if (vec[0].compare("nop") == 0)
+				if ((vec[0].compare("nop") == 0) || (vec[0].compare("noop") == 0))
 				{
 					result[j] = 0;
 				}
-				if (vec[0].compare("ret") == 0)
+				if ((vec[0].compare("ret") == 0) || (vec[0].compare("return") == 0))
 				{
 					result[j] = OPCODE_RET;
 				}
@@ -155,16 +171,19 @@ int main(int argc, char** argv)
 				{
 					result[j] = OPCODE_BRN;
 					result[j] |= atoi(&(vec[1].c_str()[1]));
+					result[j] |= 2<<2;
 				}
 				if (vec[0].compare("brz") == 0)
 				{
 					result[j] = OPCODE_BRZ;
 					result[j] |= atoi(&(vec[1].c_str()[1]));
+					result[j] |= 1<<2;
 				}
 				if (vec[0].compare("brsub") == 0)
 				{
 					result[j] = OPCODE_BRSUB;
 					result[j] |= atoi(&(vec[1].c_str()[1]));
+					result[j] |= 1<<3;
 				}
 
 			}
@@ -195,27 +214,30 @@ int main(int argc, char** argv)
 					result[j] |= atoi(&(vec[2].c_str()[1]));
 				}
 
-				if (vec[0].compare("loadimm") == 0)
+				if ((vec[0].compare("loadimm") == 0) || (vec[0].compare("ldi") == 0))
 				{
 					result[j] = OPCODE_LOADIMM;
 					result[j] |= atoi(&(vec[1].c_str()[1]))<<2;
-					result[++j] = atoi(vec[2].c_str()) & 0xff;
+					result[++j] = strtol(vec[2].c_str(), 0, 0);
 					data.push(vec[2]);
 				}
-				if (vec[0].compare("load") == 0)
+				if ((vec[0].compare("load") == 0) || (vec[0].compare("ld") == 0))
 				{
 					result[j] = OPCODE_LOAD;
 					result[j] |= atoi(&(vec[1].c_str()[1]))<<2;
-					result[++j] = atoi(vec[2].c_str()) & 0xff;
+					result[++j] = strtol(vec[2].c_str(), 0, 0);
+					data.push(vec[2]);
 				}
-				if (vec[0].compare("store") == 0)
+				if ((vec[0].compare("store") == 0) || (vec[0].compare("st") == 0))
 				{
 					result[j] = OPCODE_STORE;
 					result[j] |= atoi(&(vec[1].c_str()[1]))<<2;
-					result[++j] = atoi(vec[2].c_str()) & 0xff;
+					result[++j] = strtol(vec[2].c_str(), 0, 0);
+					data.push(vec[2]);
 				}
 			}
 		}
+
 
 		int i=0;
 		while((result[i] | result[i+1] | result[i+2] | result[i+3] | result[i+4] | result[i+5] | result[i+6] | result[i+7]) != 0)
@@ -228,6 +250,12 @@ int main(int argc, char** argv)
 		int end=-1;
 		for (end=127;end>=0;end--)
 			if (result[end] != 0) break;
+#ifdef DEBUG_EN
+		// if (end < 127)
+			cout << instruction_counter << " instructions parsed (" << data.size() << " bytes)" << endl;
+		// else
+			// cout << 128 << " instructions parsed, skipping remaining" << endl;
+#endif
 
 		std::ofstream outfile;
 		if (!is_file_exist("imem_backup.vhd"))
@@ -254,7 +282,7 @@ int main(int argc, char** argv)
 			else
 				comment = "";
 			std::bitset<8> bin(result[i]);
-			outfile << "    x\"" << std::hex << std::setfill('0') << std::setw(2) << int(result[i]) << "\", -- " << bin << " " << comment << endl;
+			outfile << "    x\"" << std::hex << std::setfill('0') << std::setw(2) << int(result[i]) << "\", -- " << std::dec << i+1 << ") " << bin << " " << comment << endl;
 		}
 
 		outfile << "    others => x\"00\"\n);\n";
